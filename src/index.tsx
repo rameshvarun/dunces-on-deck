@@ -5,6 +5,8 @@ import * as React from "react";
 
 import * as query from "query-string";
 
+import * as QRCode from 'qrcode';
+
 const ID_CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const ID_LENGTH = 4
 function generateRoomID(): string {
@@ -295,13 +297,15 @@ type HostState =
   | { kind: "running-game"; players: Array<Peer.DataConnection> };
 
 class Host extends React.Component<{}, HostState> {
+
   constructor(props) {
     console.log("This is a host...");
     super(props);
 
     this.state = { kind: "creating-room" };
 
-    const peer = new Peer("dunces-on-deck", PEERJS_CONFIG);
+    let roomID = generateRoomID();
+    const peer = new Peer(`dunces-on-deck-${roomID}`, PEERJS_CONFIG);
 
     peer.on("error", err => console.error(err));
 
@@ -309,7 +313,7 @@ class Host extends React.Component<{}, HostState> {
       console.log(`Peer ID: ${id}...`);
       this.setState(() => ({
         kind: "waiting-for-players",
-        room: id,
+        room: roomID,
         players: []
       }));
     });
@@ -337,6 +341,11 @@ class Host extends React.Component<{}, HostState> {
             <div>
               Players join at <a href={joinURL}>{joinURL}</a>
             </div>
+            <canvas ref={canvas => {
+              if (canvas) {
+                QRCode.toCanvas(canvas, joinURL);
+              }
+            }}></canvas>
             <div>({this.state.players.length}) Players Joined</div>
             {this.state.players.length >= 1 ? (
               <button onClick={() => this.setState({ kind: "running-game" })}>
@@ -373,7 +382,7 @@ class Remote extends React.Component<{ room: string }, RemoteState> {
     const peer = new Peer(PEERJS_CONFIG);
     peer.on("error", err => console.error(err));
     peer.on("open", id => {
-      this.conn = peer.connect("dunces-on-deck");
+      this.conn = peer.connect(`dunces-on-deck-${PARSED_HASH.room}`);
       this.conn.on("open", () => {
         console.log("Host has connected...");
         this.setState(() => ({ kind: "waiting" }));
