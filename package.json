@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "loglevel": "^1.6.1",
+    "peerjs": "^1.2.0",
+    "query-string": "^6.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --open --env development",
+    "build": "webpack --env production",
+    "format": "prettier --write src/**/*.ts src/**/*.tsx",
+    "typecheck": "tsc --noEmit",
+    "check-format": "prettier-check src/**/*.ts src/**/*.tsx",
+    "test": "npm run typecheck && npm run check-format && npm run build"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "prettier": "^1.18.2",
+    "prettier-check": "^2.0.0",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2",
+    "webpack-merge": "^4.2.1"
+  }
+}
