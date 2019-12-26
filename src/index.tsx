@@ -17,19 +17,6 @@ function generateRoomID(): string {
   return id;
 }
 
-const PEERJS_CONFIG = {
-  config: {
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      {
-        urls: "turn:numb.viagenie.ca",
-        credential: "muazkh",
-        username: "webrtc@live.com"
-      }
-    ]
-  }
-};
-
 const PARSED_HASH = query.parse(window.location.hash);
 const isRemote = !!PARSED_HASH.room;
 const isHost = !isRemote;
@@ -100,6 +87,7 @@ class Game extends React.Component<
     );
 
     await this.writeTitle("DUNCES ON DECK");
+    await this.wait(5);
     await this.clear();
 
     await this.write("Grand adventures await on the high seas!<br>");
@@ -305,7 +293,7 @@ class Host extends React.Component<{}, HostState> {
     this.state = { kind: "creating-room" };
 
     let roomID = generateRoomID();
-    const peer = new Peer(`dunces-on-deck-${roomID}`, PEERJS_CONFIG);
+    const peer = new Peer(`dunces-on-deck-${roomID}`);
 
     peer.on("error", err => console.error(err));
 
@@ -379,10 +367,11 @@ class Remote extends React.Component<{ room: string }, RemoteState> {
 
     this.promptInput = React.createRef();
 
-    const peer = new Peer(PEERJS_CONFIG);
+    const peer = new Peer();
     peer.on("error", err => console.error(err));
     peer.on("open", id => {
-      this.conn = peer.connect(`dunces-on-deck-${PARSED_HASH.room}`);
+      this.conn = peer.connect(`dunces-on-deck-${PARSED_HASH.room}`, {serialization:
+        'json', reliable: true});
       this.conn.on("open", () => {
         console.log("Host has connected...");
         this.setState(() => ({ kind: "waiting" }));
@@ -415,7 +404,10 @@ class Remote extends React.Component<{ room: string }, RemoteState> {
       case "prompt":
         return (
           <>
-            <div>{this.state.prompt}</div>
+            <div ref={(div) => {
+              // @ts-ignore
+              if (div) div.innerHTML = this.state.prompt;
+            }}></div>
             <div>
               <input ref={this.promptInput} type="text"></input>
               <button onClick={() => this.submitPrompt()}>Submit</button>
