@@ -6,6 +6,9 @@ import * as React from "react";
 import { generatePlayerID, unexpected } from "./utils";
 
 import { RemoteState } from "./remotemanager";
+import { Selector } from "react-giphy-selector";
+
+const GIPHY_API_KEY = "U1SoxcX7Tcwmavn0ySOgbzhrIoDVn8gb";
 
 type RemoteComponentState =
   | { kind: "error"; error: any }
@@ -23,9 +26,10 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
   conn?: Peer.DataConnection;
 
   constructor(props) {
+    super(props);
+
     console.log("This is a remote...");
 
-    super(props);
     this.state = { kind: "connecting" };
 
     this.promptInput = React.createRef();
@@ -65,9 +69,22 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
     if (this.state.remoteState.kind !== "prompt")
       throw new Error("Remote must be in prompt state.");
 
+    let response: string | null = null;
+    switch (this.state.remoteState.prompt.kind) {
+      case "text":
+        response = this.promptInput.current!.value;
+        break;
+      case "giphy":
+        response = this.selectedGIF;
+        this.selectedGIF = null;
+        break;
+      default:
+        unexpected(this.state.remoteState.prompt);
+    }
+
     this.conn!.send({
       requestID: this.state.remoteState.requestID,
-      response: this.promptInput.current!.value
+      response
     });
     this.setState({
       kind: "connected",
@@ -87,6 +104,8 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
         return unexpected(this.state);
     }
   }
+
+  selectedGIF: string | null = null;
 
   connectedRender() {
     if (this.state.kind !== "connected")
@@ -108,11 +127,23 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
           <>
             <div
               ref={div => {
-                if (div) div.innerHTML = prompt;
+                if (div) div.innerHTML = prompt.prompt;
               }}
             ></div>
             <div>
-              <input ref={this.promptInput} type="text"></input>
+              {prompt.kind == "text" && (
+                <input ref={this.promptInput} type="text"></input>
+              )}
+              {prompt.kind == "giphy" && (
+                <Selector
+                  apiKey={GIPHY_API_KEY}
+                  onGifSelected={gif => {
+                    this.selectedGIF = gif.images.fixed_height.gif_url;
+                    this.forceUpdate();
+                  }}
+                />
+              )}
+              {this.selectedGIF && <img src={this.selectedGIF}></img>}
               <button onClick={() => this.submitPrompt()}>Submit</button>
             </div>
           </>

@@ -1,5 +1,15 @@
 import Peer from "peerjs";
 
+type PromptType =
+  | {
+      kind: "text";
+      prompt: string;
+    }
+  | {
+      kind: "giphy";
+      prompt: string;
+    };
+
 export type Player = string;
 
 export type RemoteState =
@@ -15,7 +25,7 @@ export type RemoteState =
   | {
       kind: "prompt";
       requestID: number;
-      prompt: string;
+      prompt: PromptType;
     }
   | {
       kind: "submitting";
@@ -152,7 +162,7 @@ export class RemoteManager {
   }
 
   // Prompt this player to enter in a string.
-  promptPlayer(player: Player, prompt: string): Promise<string> {
+  promptPlayer(player: Player, prompt: PromptType): Promise<string> {
     if (this.state.kind !== "game")
       throw new Error(`Can only call this function in the 'game' state.`);
 

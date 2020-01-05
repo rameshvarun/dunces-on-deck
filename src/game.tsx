@@ -35,24 +35,39 @@ export class Game extends React.Component<
     await Promise.all(
       pre_title_players.map(async (player, i) => {
         if (i == 0 % players.length) {
-          shipName = `The ${await remoteManager.promptPlayer(
-            player,
-            "The ship you are on is The..."
-          )}`;
+          shipName = `The ${await remoteManager.promptPlayer(player, {
+            kind: "text",
+            prompt: "The ship you are on is The..."
+          })}`;
+
+          shipGIF = await remoteManager.promptPlayer(player, {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${shipName}.`
+          });
         }
 
         if (i == 1 % players.length) {
-          captainName = `Captain ${await remoteManager.promptPlayer(
-            player,
-            "The ship you are on is lead by Captain..."
-          )}`;
+          captainName = `Captain ${await remoteManager.promptPlayer(player, {
+            kind: "text",
+            prompt: "The ship you are on is lead by Captain..."
+          })}`;
+
+          captainGIF = await remoteManager.promptPlayer(player, {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${captainName}.`
+          });
         }
 
         if (i == 2 % players.length) {
-          treasureName = `The ${await remoteManager.promptPlayer(
-            player,
-            "Your party is traveling the oceans looking for The..."
-          )}`;
+          treasureName = `The ${await remoteManager.promptPlayer(player, {
+            kind: "text",
+            prompt: "Your party is traveling the oceans looking for The..."
+          })}`;
+
+          treasureGIF = await remoteManager.promptPlayer(player, {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${treasureName}.`
+          });
         }
 
         remoteManager.waitingForOthers(player);
@@ -84,6 +99,7 @@ export class Game extends React.Component<
     await this.clear();
 
     await this.write(`Aboard ${shipName} paces the leader of our party, `);
+    await this.showGIF(captainGIF);
     await this.writeLine(`${captainName}.`);
 
     await this.writeLine(`${captainName}: All hands on deck!`);
@@ -93,42 +109,51 @@ export class Game extends React.Component<
     );
     await this.clear();
 
-    type Character = { name: string; introduction: string };
+    type Character = { name: string; introduction: string; gif: string };
 
     let characters = new Map<Player, Character>();
     await Promise.all(
       players.map(async (player, i) => {
-        let name = `${await remoteManager.promptPlayer(
-          player,
-          "You are roleplaying as character named..."
-        )}`;
+        let name = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: "You are roleplaying as character named..."
+        });
 
-        let introduction = `${await remoteManager.promptPlayer(
-          player,
-          `When asked to introduce themselves, ${name} says...`
-        )}`;
+        let introduction = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: `When asked to introduce themselves, ${name} says...`
+        });
 
-        characters.set(player, { name, introduction });
+        let gif = await remoteManager.promptPlayer(player, {
+          kind: "giphy",
+          prompt: `Select a GIF to represent ${name}.`
+        });
+
+        characters.set(player, { name, introduction, gif });
 
         remoteManager.waitingForOthers(player);
       })
     );
     remoteManager.lookUp();
 
-    for (let { name, introduction } of characters.values()) {
+    for (let { name, introduction, gif } of characters.values()) {
+      await this.showGIF(gif);
       await this.write(`${name}: `);
       await this.writeLine(introduction);
     }
 
     await this.clear();
 
+    await this.showGIF(captainGIF);
     await this.writeLine(`${captainName}: Okay listen up crew!`);
+    await this.showGIF(treasureGIF);
     await this.writeLine(
       `${captainName}: Whatever the cost, whatever the struggle, I will find ${treasureName}!`
     );
     await this.writeLine(
       `${captainName}: I will go to the ends of the earth to find ${treasureName}!`
     );
+    await this.showGIF(captainGIF);
     await this.writeLine(`${captainName}: Do you understand?`);
 
     await this.writeLine(
@@ -136,24 +161,34 @@ export class Game extends React.Component<
     );
     await this.clear();
 
-    type Encounter = { name: string; introduction: string };
-    type Island = { name: string; description: string; encounter?: Encounter };
+    type Encounter = { name: string; introduction: string; gif: string };
+    type Island = {
+      name: string;
+      description: string;
+      gif: string;
+      encounter?: Encounter;
+    };
 
     let playerIslandsShuffle = shuffle(players);
     let islands: Array<Island> = await Promise.all(
       playerIslandsShuffle.map(async (player, i) => {
-        let name = `${await remoteManager.promptPlayer(
-          player,
-          "Your crew lands on an island named on your map as..."
-        )}`;
+        let name = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: "Your crew lands on an island named on your map as..."
+        });
 
-        let description = `${await remoteManager.promptPlayer(
-          player,
-          `As the crew lands, they see that the island...`
-        )}`;
+        let description = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: `As the crew lands, they see that the island...`
+        });
+
+        let gif = await remoteManager.promptPlayer(player, {
+          kind: "giphy",
+          prompt: `Select a GIF to represent ${name}.`
+        });
 
         remoteManager.waitingForOthers(player);
-        return { name, description };
+        return { name, description, gif };
       })
     );
 
@@ -161,17 +196,22 @@ export class Game extends React.Component<
       playerIslandsShuffle.map(async (player, i) => {
         let island = islands[(i + 1) % islands.length];
 
-        let name = `${await remoteManager.promptPlayer(
-          player,
-          `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
-        )}`;
+        let name = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
+        });
 
-        let introduction = `${await remoteManager.promptPlayer(
-          player,
-          `When your crew first comes across ${name}, it...`
-        )}`;
+        let introduction = await remoteManager.promptPlayer(player, {
+          kind: "text",
+          prompt: `When your crew first comes across ${name}, it...`
+        });
 
-        island.encounter = { name, introduction };
+        let gif = await remoteManager.promptPlayer(player, {
+          kind: "giphy",
+          prompt: `Select a GIF to represent ${name}.`
+        });
+
+        island.encounter = { name, introduction, gif };
         remoteManager.waitingForOthers(player);
       })
     );
@@ -183,6 +223,7 @@ export class Game extends React.Component<
       await this.write(
         `${captainName} checks his map and finds the island marked as `
       );
+      await this.showGIF(island.gif);
       await this.writeLine(`${island.name}.`);
 
       await this.write(`As you land, you see that the island `);
@@ -194,6 +235,7 @@ export class Game extends React.Component<
       let encounter = island.encounter!;
 
       await this.write(`Suddenly you come across `);
+      await this.showGIF(encounter.gif);
       await this.writeLine(`${encounter.name}!`);
 
       await this.write(`Before you can react, ${encounter.name} `);
@@ -203,27 +245,27 @@ export class Game extends React.Component<
 
       let playerEncounterShuffle = shuffle(players);
 
-      type Action = { character: string; action: string; reaction?: string };
+      type Action = { character: Character; action: string; reaction?: string };
       let actions: Array<Action> = await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
           let character = characters.get(player)!;
-          let action = `${await remoteManager.promptPlayer(
-            player,
-            `In order to deal with ${encounter.name}, ${character.name}...`
-          )}`;
+          let action = await remoteManager.promptPlayer(player, {
+            kind: "text",
+            prompt: `In order to deal with ${encounter.name}, ${character.name}...`
+          });
 
           remoteManager.waitingForOthers(player);
-          return { character: character.name, action };
+          return { character: character, action };
         })
       );
 
       await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
           let action = actions[(i + 1) % actions.length];
-          action.reaction = `${await remoteManager.promptPlayer(
-            player,
-            `In order to deal with ${encounter.name}, ${action.character} ${action.action}. In reaction ${encounter.name}...`
-          )}`;
+          action.reaction = `${await remoteManager.promptPlayer(player, {
+            kind: "text",
+            prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`
+          })}`;
 
           remoteManager.waitingForOthers(player);
         })
@@ -232,12 +274,15 @@ export class Game extends React.Component<
       remoteManager.lookUp();
 
       for (let action of actions) {
-        await this.writeLine(`${action.character} ${action.action}.`);
+        await this.showGIF(action.character.gif);
+        await this.writeLine(`${action.character.name} ${action.action}.`);
+        await this.showGIF(encounter.gif);
         await this.writeLine(`${encounter.name} ${action.reaction}.`);
       }
 
       await this.clear();
 
+      await this.showGIF(island.gif);
       await this.writeLine(
         `Having dealt with ${encounter.name}, your crew now leaves ${island.name}.`
       );
@@ -245,11 +290,14 @@ export class Game extends React.Component<
       await this.clear();
     }
 
+    await this.showGIF(shipGIF);
     await this.writeLine(`Exhausted, your crew is at their breaking point.`);
     await this.writeLine(
       `${captainName}: It's hopeless! We'll never find ${treasureName}!`
     );
     await this.writeLine(`${captainName}: Wait, what's that!`);
+
+    await this.showGIF(treasureGIF);
     await this.writeLine(`Suddenly in the distance, you see ${treasureName}!`);
     await this.writeLine(`It was all worth it!`);
     await this.writeLine(`You and your crew have done it!`);
@@ -304,6 +352,6 @@ export class Game extends React.Component<
   }
 
   async showGIF(url: string) {
-    // this.gifDisplay.current!.innerHTML = `<img src='${url}'></img>`;
+    this.gifDisplay.current!.innerHTML = `<img src='${url}'></img>`;
   }
 }
