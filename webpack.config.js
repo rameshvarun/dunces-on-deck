@@ -3,7 +3,10 @@ const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = {
-  entry: "./src/index.tsx",
+  entry: {
+    host: "./src/host.tsx",
+    remote: "./src/remote.tsx",
+  },
   module: {
     rules: [
       {
@@ -21,13 +24,21 @@ const common = {
     extensions: [".tsx", ".ts", ".js"]
   },
   output: {
-    filename: "bundle.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
-      title: 'Dunces on Deck'
+      title: 'Dunces on Deck',
+      filename: 'index.html',
+      chunks: ['host']
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/remote.html',
+      title: 'Dunces on Deck Remote',
+      filename: 'join/index.html',
+      chunks: ['remote']
     }),
   ]
 };

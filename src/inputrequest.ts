@@ -1,14 +1,15 @@
 type InputRequest = {
-  title: string;
   fields: Array<InputField>;
 };
 
-type InputField = TextInput | ParagraphInput;
+type InputField = TextInput | GIPHYInput;
 
 type TextInput = {
   kind: "text";
+  prompt: string;
 };
 
-type ParagraphInput = {
-  kind: "paragraph";
+type GIPHYInput = {
+  kind: "giphy";
+  prompt: string;
 };
