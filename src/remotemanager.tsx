@@ -33,7 +33,7 @@ export type RemoteManagerState =
     }
   | {
       kind: "game";
-      connections: Map<Player, Peer.DataConnection>;
+      connections: Map<Player, Peer.DataConnection | null>;
 
       remoteState: Map<Player, RemoteState>;
       promptResolve: Map<Player, (string) => void>;
@@ -61,23 +61,57 @@ export class RemoteManager {
 
     peer.on("connection", conn => {
       let player = conn.metadata;
+
       conn.on("open", () => {
         console.log(`Player ${player} has connected...`);
-        this.state.connections.set(player, conn);
+        switch (this.state.kind) {
+          case "lobby":
+            // If a player joins during the lobby phase, we simply add them to the Map of players.
+            this.state.connections.set(player, conn);
+            // Signal to UI that the lobby has been updated.
+            if (this.onLobbyUpdate)
+              this.onLobbyUpdate(Array.from(this.state.connections.keys()));
+            // Tell the player that we are waiting for the host.
+            conn.send({ kind: "waiting-for-host" });
+            break;
+          case "game":
+            if (this.state.connections.has(player)) {
+              // If this is a known player, replace connection in map.
+              this.state.connections.set(player, conn);
 
-        if (this.state.kind === "lobby" && this.onLobbyUpdate)
-          this.onLobbyUpdate(Array.from(this.state.connections.keys()));
-
-        if (this.state.kind === "game") {
-          let remoteState = this.state.remoteState.get(player);
-          if (remoteState) conn.send(remoteState);
+              // If we have a stored state for this player, send that state.
+              let remoteState = this.state.remoteState.get(player);
+              if (remoteState) conn.send(remoteState);
+            } else {
+              // If this is an unknown player, reject them since players cannot join a game in progress.
+              console.log(
+                `Player ${player} tried to join a game in progress. Denying connection.`
+              );
+              conn.close();
+            }
+            break;
         }
       });
 
       conn.on("close", () => {
         console.log(`Player ${conn.metadata} has disconnected...`);
-        if (this.state.connections.get(conn.metadata) === conn)
-          this.state.connections.delete(conn.metadata);
+        switch (this.state.kind) {
+          case "lobby":
+            // In the lobby phase, if the current connection is the one that
+            // disconnected, delete the connection.
+            if (this.state.connections.get(player) === conn)
+              this.state.connections.delete(player);
+            // Signal to UI that the lobby has been updated.
+            if (this.onLobbyUpdate)
+              this.onLobbyUpdate(Array.from(this.state.connections.keys()));
+            break;
+          case "game":
+            // During the game phase, if the current connection is the one that
+            // disconnected, set the connection to null.
+            if (this.state.connections.get(player) === conn)
+              this.state.connections.set(player, null);
+            break;
+        }
       });
 
       conn.on("data", (msg: RemoteResponse) => {
@@ -85,6 +119,10 @@ export class RemoteManager {
           case "game":
             let currentConnection = this.state.connections.get(player);
             let remoteState = this.state.remoteState.get(player);
+
+            // 1. The connection we received data on is current.
+            // 2. The current state of the remote is a prompt.
+            // 3. The requestID of the response matches the requestID of the prompt.
             if (
               currentConnection === conn &&
               remoteState &&
@@ -116,7 +154,7 @@ export class RemoteManager {
   // Prompt this player to enter in a string.
   promptPlayer(player: Player, prompt: string): Promise<string> {
     if (this.state.kind !== "game")
-      throw new Error(`Can call this function in the 'game' state.`);
+      throw new Error(`Can only call this function in the 'game' state.`);
 
     let requestID = this.requestID++;
     let promptMsg: RemoteState = { kind: "prompt", prompt, requestID };
@@ -135,7 +173,7 @@ export class RemoteManager {
   // Signal to this player that he is waiting on other players.
   waitingForOthers(player: Player) {
     if (this.state.kind !== "game")
-      throw new Error(`Can call this function in the 'game' state.`);
+      throw new Error(`Can only call this function in the 'game' state.`);
 
     let remoteState: RemoteState = { kind: "waiting-for-others" };
     this.state.remoteState.set(player, remoteState);
@@ -147,7 +185,7 @@ export class RemoteManager {
   // Signal all players to look up at the screen.
   lookUp() {
     if (this.state.kind !== "game")
-      throw new Error(`Can call this function in the 'game' state.`);
+      throw new Error(`Can only call this function in the 'game' state.`);
 
     for (let player of this.getPlayers()) {
       let remoteState: RemoteState = { kind: "look-up" };

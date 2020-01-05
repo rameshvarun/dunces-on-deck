@@ -3,16 +3,17 @@ import * as React from "react";
 import { shuffle } from "./utils";
 
 import { Player, RemoteManager } from "./remotemanager";
+import { narrate } from "./narrator";
 
 export class Game extends React.Component<
   { remoteManager: RemoteManager },
   {}
 > {
-  display: React.RefObject<HTMLDivElement>;
+  display: React.RefObject<HTMLDivElement> = React.createRef();
+  gifDisplay: React.RefObject<HTMLDivElement> = React.createRef();
+
   constructor(props) {
     super(props);
-    this.display = React.createRef();
-
     this.runGame(props.remoteManager);
   }
 
@@ -23,28 +24,35 @@ export class Game extends React.Component<
     let captainName: string = "ERROR";
     let treasureName: string = "ERROR";
 
+    let shipGIF: string =
+      "https://media.giphy.com/media/xWstuL3iiUJ9uBpSDO/giphy.gif";
+    let treasureGIF: string =
+      "https://media.giphy.com/media/3UzHsEMaIP9F6/giphy.gif";
+    let captainGIF: string =
+      "https://media.giphy.com/media/FQyQEYd0KlYQ/source.gif";
+
     let pre_title_players = shuffle(players);
     await Promise.all(
       pre_title_players.map(async (player, i) => {
         if (i == 0 % players.length) {
-          shipName = `<b>The ${await remoteManager.promptPlayer(
+          shipName = `The ${await remoteManager.promptPlayer(
             player,
             "The ship you are on is The..."
-          )}</b>`;
+          )}`;
         }
 
         if (i == 1 % players.length) {
-          captainName = `<b>Captain ${await remoteManager.promptPlayer(
+          captainName = `Captain ${await remoteManager.promptPlayer(
             player,
             "The ship you are on is lead by Captain..."
-          )}</b>`;
+          )}`;
         }
 
         if (i == 2 % players.length) {
-          treasureName = `<b>The ${await remoteManager.promptPlayer(
+          treasureName = `The ${await remoteManager.promptPlayer(
             player,
             "Your party is traveling the oceans looking for The..."
-          )}</b>`;
+          )}`;
         }
 
         remoteManager.waitingForOthers(player);
@@ -56,179 +64,198 @@ export class Game extends React.Component<
     await this.wait(5);
     await this.clear();
 
-    await this.write("Grand adventures await on the high seas!<br>");
+    await this.writeLine("Grand adventures await on the high seas!");
 
     await this.write("Our party sets sail aboard ");
-    await this.write(shipName);
+    await this.showGIF(shipGIF);
+    await this.writeBold(shipName);
 
     await this.write(" in hopes of finding ");
-    await this.write(`${treasureName}!<br>`);
+    await this.showGIF(treasureGIF);
+    await this.writeBold(treasureName, 0);
+    await this.writeLine("!");
 
-    await this.write(
-      "Many treasure seekers have tried but none have ever succeeded!<br>"
+    await this.writeLine(
+      "Many treasure seekers have tried but none have ever succeeded!"
     );
     await this.write("Will our adventurers be the first?");
-    await this.write(" Only time will tell!");
+    await this.writeLine(" Only time will tell!");
 
     await this.clear();
 
-    await this.write(`Aboard the ${shipName} paces the leader of our party, `);
-    await this.write(`${captainName}.<br>`);
-    //
-    // await this.write(`${captainName}: All hands on deck!<br>`);
-    // await this.write(`The crew emerge from their quarters.<br>`);
-    // await this.write(
-    //   `${captainName}: Some of you seem to be new here so why don't you introduce yourselves.`
-    // );
-    // await this.clear();
-    //
-    // type Character = { name: string; introduction: string };
-    //
-    // let characters = new Map<Player, Character>();
-    // await Promise.all(
-    //   players.map(async (player, i) => {
-    //     let name = `<b>${await remoteManager.promptPlayer(
-    //       player,
-    //       "You are roleplaying as character named..."
-    //     )}</b>`;
-    //
-    //     let introduction = `<b>${await remoteManager.promptPlayer(
-    //       player,
-    //       `When asked to introduce themselves, ${name} says...`
-    //     )}</b>`;
-    //
-    //     characters.set(player, { name, introduction });
-    //   })
-    // );
-    //
-    // for (let { name, introduction } of characters.values()) {
-    //   await this.write(`${name}: `);
-    //   await this.write(`${introduction}<br>`);
-    // }
-    //
-    // await this.clear();
-    //
-    // await this.write(`${captainName}: Okay listen up crew!<br>`);
-    // await this.write(
-    //   `${captainName}: Whatever the cost, whatever the struggle, I will find ${treasureName}!<br>`
-    // );
-    // await this.write(
-    //   `${captainName}: I will go to the ends of the earth to find ${treasureName}!<br>`
-    // );
-    // await this.write(`${captainName}: Do you understand?<br>`);
-    //
-    // await this.write(
-    //   `${captainName} is interrupted as a voice from the mast calls out "Land Ho!"<br>`
-    // );
-    // await this.clear();
-    //
-    // let playerIslandsShuffle = shuffle(players);
-    // let islands: Array<any> = await Promise.all(
-    //   playerIslandsShuffle.map(async (player, i) => {
-    //     let name = `<b>${await promptPlayer(
-    //       player,
-    //       "Your crew lands on an island named on your map as..."
-    //     )}</b>`;
-    //
-    //     let description = `<b>${await promptPlayer(
-    //       player,
-    //       `As the crew lands, they see that the island...`
-    //     )}</b>`;
-    //
-    //     return { name, description };
-    //   })
-    // );
-    //
-    // await Promise.all(
-    //   playerIslandsShuffle.map(async (player, i) => {
-    //     let island = islands[(i + 1) % islands.length];
-    //
-    //     let name = `<b>${await promptPlayer(
-    //       player,
-    //       `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
-    //     )}</b>`;
-    //
-    //     let introduction = `<b>${await promptPlayer(
-    //       player,
-    //       `When your crew first comes across ${name}, it...`
-    //     )}</b>`;
-    //
-    //     island.encounter = { name, introduction };
-    //   })
-    // );
-    //
-    // for (let island of islands) {
-    //   await this.write(`Your crew sees an island in the distance.<br>`);
-    //   await this.write(
-    //     `${captainName} checks his map and finds the island marked as `
-    //   );
-    //   await this.write(`${island.name}.<br>`);
-    //
-    //   await this.write(`As you land, you see that the island `);
-    //   await this.write(`${island.description}.<br>`);
-    //   await this.write(`Your party cautiously proceeds...<br>`);
-    //
-    //   await this.clear();
-    //
-    //   let encounter = island.encounter;
-    //
-    //   await this.write(`Suddenly you come across `);
-    //   await this.write(`${encounter.name}!<br>`);
-    //
-    //   await this.write(`Before you can react, ${encounter.name} `);
-    //   await this.write(`${encounter.introduction}!<br>`);
-    //
-    //   await this.clear();
-    //
-    //   let playerEncounterShuffle = shuffle(players);
-    //
-    //   type Action = { character: string; action: string; reaction?: string };
-    //   let actions: Array<Action> = await Promise.all(
-    //     playerEncounterShuffle.map(async (player, i) => {
-    //       let character = characters.get(player)!;
-    //       let action = `<b>${await promptPlayer(
-    //         player,
-    //         `In order to deal with ${encounter.name}, ${character.name}...`
-    //       )}</b>`;
-    //       return { character: character.name, action };
-    //     })
-    //   );
-    //
-    //   await Promise.all(
-    //     playerEncounterShuffle.map(async (player, i) => {
-    //       let action = actions[(i + 1) % actions.length];
-    //       action.reaction = `<b>${await promptPlayer(
-    //         player,
-    //         `In order to deal with ${encounter.name}, ${action.character} ${action.action}. In reaction ${encounter.name}...`
-    //       )}</b>`;
-    //     })
-    //   );
-    //
-    //   for (let action of actions) {
-    //     await this.write(`${action.character} ${action.action}.<br>`);
-    //     await this.write(`${encounter.name} ${action.reaction}.<br>`);
-    //   }
-    //
-    //   await this.clear();
-    //
-    //   await this.write(
-    //     `Having dealt with ${encounter.name}, your crew now leaves ${island.name}.`
-    //   );
-    //
-    //   await this.clear();
-    // }
-    //
-    // await this.write(`Exhasted, your crew is at their breaking point.<br>`);
-    // await this.write(
-    //   `${captainName}: It's hopeless! We'll never find ${treasureName}!<br>`
-    // );
-    // await this.write(`${captainName}: Wait, what's that!<br>`);
-    // await this.write(`Suddenly in the distance, you see ${treasureName}!<br>`);
-    // await this.write(`It was all worth it!<br>`);
-    // await this.write(`You and your crew have done it!<br>`);
-    //
-    // await this.clear();
-    // await this.writeTitle("THE END");
+    await this.write(`Aboard ${shipName} paces the leader of our party, `);
+    await this.writeLine(`${captainName}.`);
+
+    await this.writeLine(`${captainName}: All hands on deck!`);
+    await this.writeLine(`The crew emerge from their quarters.`);
+    await this.writeLine(
+      `${captainName}: Some of you seem to be new here so why don't you introduce yourselves.`
+    );
+    await this.clear();
+
+    type Character = { name: string; introduction: string };
+
+    let characters = new Map<Player, Character>();
+    await Promise.all(
+      players.map(async (player, i) => {
+        let name = `${await remoteManager.promptPlayer(
+          player,
+          "You are roleplaying as character named..."
+        )}`;
+
+        let introduction = `${await remoteManager.promptPlayer(
+          player,
+          `When asked to introduce themselves, ${name} says...`
+        )}`;
+
+        characters.set(player, { name, introduction });
+
+        remoteManager.waitingForOthers(player);
+      })
+    );
+    remoteManager.lookUp();
+
+    for (let { name, introduction } of characters.values()) {
+      await this.write(`${name}: `);
+      await this.writeLine(introduction);
+    }
+
+    await this.clear();
+
+    await this.writeLine(`${captainName}: Okay listen up crew!`);
+    await this.writeLine(
+      `${captainName}: Whatever the cost, whatever the struggle, I will find ${treasureName}!`
+    );
+    await this.writeLine(
+      `${captainName}: I will go to the ends of the earth to find ${treasureName}!`
+    );
+    await this.writeLine(`${captainName}: Do you understand?`);
+
+    await this.writeLine(
+      `${captainName} is interrupted as a voice from the mast calls out "Land Ho!"`
+    );
+    await this.clear();
+
+    type Encounter = { name: string; introduction: string };
+    type Island = { name: string; description: string; encounter?: Encounter };
+
+    let playerIslandsShuffle = shuffle(players);
+    let islands: Array<Island> = await Promise.all(
+      playerIslandsShuffle.map(async (player, i) => {
+        let name = `${await remoteManager.promptPlayer(
+          player,
+          "Your crew lands on an island named on your map as..."
+        )}`;
+
+        let description = `${await remoteManager.promptPlayer(
+          player,
+          `As the crew lands, they see that the island...`
+        )}`;
+
+        remoteManager.waitingForOthers(player);
+        return { name, description };
+      })
+    );
+
+    await Promise.all(
+      playerIslandsShuffle.map(async (player, i) => {
+        let island = islands[(i + 1) % islands.length];
+
+        let name = `${await remoteManager.promptPlayer(
+          player,
+          `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
+        )}`;
+
+        let introduction = `${await remoteManager.promptPlayer(
+          player,
+          `When your crew first comes across ${name}, it...`
+        )}`;
+
+        island.encounter = { name, introduction };
+        remoteManager.waitingForOthers(player);
+      })
+    );
+
+    remoteManager.lookUp();
+
+    for (let island of islands) {
+      await this.writeLine(`Your crew sees an island in the distance.`);
+      await this.write(
+        `${captainName} checks his map and finds the island marked as `
+      );
+      await this.writeLine(`${island.name}.`);
+
+      await this.write(`As you land, you see that the island `);
+      await this.writeLine(`${island.description}.`);
+      await this.writeLine(`Your party cautiously proceeds...`);
+
+      await this.clear();
+
+      let encounter = island.encounter!;
+
+      await this.write(`Suddenly you come across `);
+      await this.writeLine(`${encounter.name}!`);
+
+      await this.write(`Before you can react, ${encounter.name} `);
+      await this.writeLine(`${encounter.introduction}!`);
+
+      await this.clear();
+
+      let playerEncounterShuffle = shuffle(players);
+
+      type Action = { character: string; action: string; reaction?: string };
+      let actions: Array<Action> = await Promise.all(
+        playerEncounterShuffle.map(async (player, i) => {
+          let character = characters.get(player)!;
+          let action = `${await remoteManager.promptPlayer(
+            player,
+            `In order to deal with ${encounter.name}, ${character.name}...`
+          )}`;
+
+          remoteManager.waitingForOthers(player);
+          return { character: character.name, action };
+        })
+      );
+
+      await Promise.all(
+        playerEncounterShuffle.map(async (player, i) => {
+          let action = actions[(i + 1) % actions.length];
+          action.reaction = `${await remoteManager.promptPlayer(
+            player,
+            `In order to deal with ${encounter.name}, ${action.character} ${action.action}. In reaction ${encounter.name}...`
+          )}`;
+
+          remoteManager.waitingForOthers(player);
+        })
+      );
+
+      remoteManager.lookUp();
+
+      for (let action of actions) {
+        await this.writeLine(`${action.character} ${action.action}.`);
+        await this.writeLine(`${encounter.name} ${action.reaction}.`);
+      }
+
+      await this.clear();
+
+      await this.writeLine(
+        `Having dealt with ${encounter.name}, your crew now leaves ${island.name}.`
+      );
+
+      await this.clear();
+    }
+
+    await this.writeLine(`Exhausted, your crew is at their breaking point.`);
+    await this.writeLine(
+      `${captainName}: It's hopeless! We'll never find ${treasureName}!`
+    );
+    await this.writeLine(`${captainName}: Wait, what's that!`);
+    await this.writeLine(`Suddenly in the distance, you see ${treasureName}!`);
+    await this.writeLine(`It was all worth it!`);
+    await this.writeLine(`You and your crew have done it!`);
+
+    await this.clear();
+    await this.writeTitle("THE END");
   }
 
   wait(seconds: number): Promise<void> {
@@ -237,20 +264,46 @@ export class Game extends React.Component<
     });
   }
 
-  async writeTitle(title: string) {
-    this.display.current!.innerHTML += `<h1>${title}</h1>`;
+  async writeTitle(text: string) {
+    narrate(text);
+    this.display.current!.innerHTML += `<h1>${text}</h1>`;
   }
 
-  async write(text: string, delay: number = 4) {
+  async write(text: string, delay: number = 4, silent = false) {
+    if (!silent) narrate(text);
     this.display.current!.innerHTML += text;
     await this.wait(delay);
   }
 
+  async writeBold(text: string, delay: number = 4) {
+    narrate(text);
+    await this.write(`<b>${text}<b>`, delay, true);
+  }
+
+  async writeLine(text: string, delay: number = 4) {
+    await this.write(text, delay);
+    await this.eol();
+  }
+
+  async eol() {
+    this.display.current!.innerHTML += "<br>";
+  }
+
   async clear() {
+    this.gifDisplay.current!.innerHTML = "";
     this.display.current!.innerHTML = "";
   }
 
   render() {
-    return <div ref={this.display}></div>;
+    return (
+      <>
+        <div ref={this.gifDisplay}></div>
+        <div ref={this.display}></div>
+      </>
+    );
+  }
+
+  async showGIF(url: string) {
+    // this.gifDisplay.current!.innerHTML = `<img src='${url}'></img>`;
   }
 }

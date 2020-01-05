@@ -8,6 +8,7 @@ export function shuffle<T>(unshuffled: Array<T>): Array<T> {
   return array;
 }
 
+// Generate a string ID given a set of characters and a desired length.
 export function generateID(idCharacters, idLength): string {
   let id = "";
   while (id.length < idLength) {
@@ -16,16 +17,16 @@ export function generateID(idCharacters, idLength): string {
   return id;
 }
 
+// Utility function for switch-case exhaustiveness checking.
 export function unexpected(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
 
 const ROOM_ID_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
 const ROOM_ID_LENGTH = 4;
-
 export var generateRoomID = () =>
   generateID(ROOM_ID_CHARACTERS, ROOM_ID_LENGTH);
 
-const REMOTE_ID_LENGTH = 10;
+const PLAYER_ID_LENGTH = 10;
 export var generatePlayerID = () =>
-  generateID(ROOM_ID_CHARACTERS, REMOTE_ID_LENGTH);
+  generateID(ROOM_ID_CHARACTERS, PLAYER_ID_LENGTH);
