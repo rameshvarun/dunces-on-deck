@@ -1,0 +1,4 @@
+- https://freesound.org/people/richwise/sounds/475350/
+- https://opengameart.org/sites/default/files/Ireland%27s%20Coast%20%28Travelog%20Edition%20-%20Live%29_0.mp3
+- https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme
+- https://opengameart.org/content/beyond-the-clouds-orchestral-theme

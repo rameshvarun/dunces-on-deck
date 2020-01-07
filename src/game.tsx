@@ -5,6 +5,8 @@ import { shuffle } from "./utils";
 import { Player, RemoteManager } from "./remotemanager";
 import { narrate } from "./narrator";
 
+import {switchMusic, oceanAmbience, adventurousTheme, battleTheme, victoryTheme} from "./music";
+
 import {
   randomCharacter,
   randomLocation,
@@ -32,6 +34,8 @@ export class Game extends React.Component<
   }
 
   async runGame(remoteManager: RemoteManager) {
+    switchMusic(oceanAmbience);
+
     let players = remoteManager.getPlayers();
 
     let shipName: string = "ERROR";
@@ -110,8 +114,14 @@ export class Game extends React.Component<
     );
     remoteManager.lookUp();
 
+    switchMusic(adventurousTheme);
+    await this.wait(5);
     await this.writeTitle("DUNCES ON DECK");
     await this.wait(5);
+    await this.writeLine("Presented by Varun Ramesh");
+    await this.writeLine("Featuring Music by Matthew Pablo");
+    await this.write("And written by...");
+    await this.writeLine(" you!");
     await this.clear();
 
     await this.writeLine("Grand adventures await on the high seas!");
@@ -131,6 +141,7 @@ export class Game extends React.Component<
     await this.write("Will our adventurers be the first?");
     await this.writeLine(" Only time will tell!");
 
+    switchMusic(oceanAmbience);
     await this.clear();
 
     await this.write(`Aboard ${shipName} paces the leader of our party, `);
@@ -305,6 +316,7 @@ export class Game extends React.Component<
 
       let encounter = island.encounter!;
 
+      switchMusic(battleTheme);
       await this.write(`Suddenly you come across `);
       await this.showGIF(encounter.gif);
       await this.writeLine(`${encounter.name}!`);
@@ -361,6 +373,8 @@ export class Game extends React.Component<
 
       await this.clear();
 
+      switchMusic(oceanAmbience);
+
       await this.showGIF(island.gif);
       await this.writeLine(
         `Having dealt with ${encounter.name}, your crew now leaves ${island.name}.`
@@ -376,6 +390,7 @@ export class Game extends React.Component<
     );
     await this.writeLine(`${captainName}: Wait, what's that!`);
 
+    switchMusic(victoryTheme);
     await this.showGIF(treasureGIF);
     await this.writeLine(`Suddenly in the distance, you see ${treasureName}!`);
     await this.writeLine(`It was all worth it!`);
