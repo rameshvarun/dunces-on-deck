@@ -118,8 +118,8 @@ export class Game extends React.Component<
     await this.wait(5);
     await this.writeTitle("DUNCES ON DECK");
     await this.wait(5);
-    await this.writeLine("Presented by Varun Ramesh");
-    await this.writeLine("Featuring Music by Matthew Pablo");
+    await this.writeLine("Presented by Varun Ramesh.");
+    await this.writeLine("Featuring music by Matthew Pablo.");
     await this.write("And written by...");
     await this.writeLine(" you!");
     await this.clear();
