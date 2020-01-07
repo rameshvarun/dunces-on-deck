@@ -66,6 +66,7 @@ class Host extends React.Component<{}, HostState> {
           this.state.room;
         return (
           <>
+            <h1 style={{fontFamily: "'Great Vibes', cursive"}}>Dunces on Deck</h1>
             <div>
               Players join at <a href={joinURL}>{joinURL}</a>
             </div>
