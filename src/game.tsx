@@ -5,6 +5,20 @@ import { shuffle } from "./utils";
 import { Player, RemoteManager } from "./remotemanager";
 import { narrate } from "./narrator";
 
+import {
+  randomCharacter,
+  randomLocation,
+  randomThing,
+  randomQuote,
+  randomAction,
+  randomDescription
+} from "./defaults";
+
+// Return the first GIF available under this search result.
+function findGIF(search: string): string {
+  return "https://media.giphy.com/media/xWstuL3iiUJ9uBpSDO/giphy.gif";
+}
+
 export class Game extends React.Component<
   { remoteManager: RemoteManager },
   {}
@@ -24,50 +38,71 @@ export class Game extends React.Component<
     let captainName: string = "ERROR";
     let treasureName: string = "ERROR";
 
-    let shipGIF: string =
-      "https://media.giphy.com/media/xWstuL3iiUJ9uBpSDO/giphy.gif";
-    let treasureGIF: string =
-      "https://media.giphy.com/media/3UzHsEMaIP9F6/giphy.gif";
-    let captainGIF: string =
-      "https://media.giphy.com/media/FQyQEYd0KlYQ/source.gif";
+    let shipGIF: string = "";
+    let treasureGIF: string = "";
+    let captainGIF: string = "";
 
     let pre_title_players = shuffle(players);
     await Promise.all(
       pre_title_players.map(async (player, i) => {
         if (i == 0 % players.length) {
-          shipName = `The ${await remoteManager.promptPlayer(player, {
-            kind: "text",
-            prompt: "The ship you are on is The..."
-          })}`;
+          shipName = `The ${await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "text",
+              prompt: "The ship you are on is The..."
+            },
+            randomCharacter()
+          )}`;
 
-          shipGIF = await remoteManager.promptPlayer(player, {
-            kind: "giphy",
-            prompt: `Select a GIF to represent ${shipName}.`
-          });
+          shipGIF = await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "giphy",
+              prompt: `Select a GIF to represent ${shipName}.`
+            },
+            findGIF(shipName)
+          );
         }
 
         if (i == 1 % players.length) {
-          captainName = `Captain ${await remoteManager.promptPlayer(player, {
-            kind: "text",
-            prompt: "The ship you are on is lead by Captain..."
-          })}`;
+          captainName = `Captain ${await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "text",
+              prompt: "The ship you are on is lead by Captain..."
+            },
+            randomCharacter()
+          )}`;
 
-          captainGIF = await remoteManager.promptPlayer(player, {
-            kind: "giphy",
-            prompt: `Select a GIF to represent ${captainName}.`
-          });
+          captainGIF = await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "giphy",
+              prompt: `Select a GIF to represent ${captainName}.`
+            },
+            findGIF(captainName)
+          );
         }
 
         if (i == 2 % players.length) {
-          treasureName = `The ${await remoteManager.promptPlayer(player, {
-            kind: "text",
-            prompt: "Your party is traveling the oceans looking for The..."
-          })}`;
+          treasureName = `The ${await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "text",
+              prompt: "Your party is traveling the oceans looking for The..."
+            },
+            randomThing()
+          )}`;
 
-          treasureGIF = await remoteManager.promptPlayer(player, {
-            kind: "giphy",
-            prompt: `Select a GIF to represent ${treasureName}.`
-          });
+          treasureGIF = await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "giphy",
+              prompt: `Select a GIF to represent ${treasureName}.`
+            },
+            findGIF(treasureName)
+          );
         }
 
         remoteManager.waitingForOthers(player);
@@ -114,20 +149,32 @@ export class Game extends React.Component<
     let characters = new Map<Player, Character>();
     await Promise.all(
       players.map(async (player, i) => {
-        let name = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: "You are roleplaying as character named..."
-        });
+        let name = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: "You are roleplaying as character named..."
+          },
+          randomCharacter()
+        );
 
-        let introduction = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: `When asked to introduce themselves, ${name} says...`
-        });
+        let introduction = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: `When asked to introduce themselves, ${name} says...`
+          },
+          randomQuote()
+        );
 
-        let gif = await remoteManager.promptPlayer(player, {
-          kind: "giphy",
-          prompt: `Select a GIF to represent ${name}.`
-        });
+        let gif = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${name}.`
+          },
+          findGIF(name)
+        );
 
         characters.set(player, { name, introduction, gif });
 
@@ -172,20 +219,32 @@ export class Game extends React.Component<
     let playerIslandsShuffle = shuffle(players);
     let islands: Array<Island> = await Promise.all(
       playerIslandsShuffle.map(async (player, i) => {
-        let name = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: "Your crew lands on an island named on your map as..."
-        });
+        let name = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: "Your crew lands on an island named on your map as..."
+          },
+          randomLocation()
+        );
 
-        let description = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: `As the crew lands, they see that the island...`
-        });
+        let description = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: `As the crew lands, they see that the island...`
+          },
+          randomDescription()
+        );
 
-        let gif = await remoteManager.promptPlayer(player, {
-          kind: "giphy",
-          prompt: `Select a GIF to represent ${name}.`
-        });
+        let gif = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${name}.`
+          },
+          findGIF(name)
+        );
 
         remoteManager.waitingForOthers(player);
         return { name, description, gif };
@@ -196,20 +255,32 @@ export class Game extends React.Component<
       playerIslandsShuffle.map(async (player, i) => {
         let island = islands[(i + 1) % islands.length];
 
-        let name = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
-        });
+        let name = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
+          },
+          randomCharacter()
+        );
 
-        let introduction = await remoteManager.promptPlayer(player, {
-          kind: "text",
-          prompt: `When your crew first comes across ${name}, it...`
-        });
+        let introduction = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "text",
+            prompt: `When your crew first comes across ${name}, it...`
+          },
+          randomAction()
+        );
 
-        let gif = await remoteManager.promptPlayer(player, {
-          kind: "giphy",
-          prompt: `Select a GIF to represent ${name}.`
-        });
+        let gif = await remoteManager.promptPlayer(
+          player,
+          {
+            kind: "giphy",
+            prompt: `Select a GIF to represent ${name}.`
+          },
+          findGIF(name)
+        );
 
         island.encounter = { name, introduction, gif };
         remoteManager.waitingForOthers(player);
@@ -249,10 +320,14 @@ export class Game extends React.Component<
       let actions: Array<Action> = await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
           let character = characters.get(player)!;
-          let action = await remoteManager.promptPlayer(player, {
-            kind: "text",
-            prompt: `In order to deal with ${encounter.name}, ${character.name}...`
-          });
+          let action = await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "text",
+              prompt: `In order to deal with ${encounter.name}, ${character.name}...`
+            },
+            randomAction()
+          );
 
           remoteManager.waitingForOthers(player);
           return { character: character, action };
@@ -262,10 +337,14 @@ export class Game extends React.Component<
       await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
           let action = actions[(i + 1) % actions.length];
-          action.reaction = `${await remoteManager.promptPlayer(player, {
-            kind: "text",
-            prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`
-          })}`;
+          action.reaction = await remoteManager.promptPlayer(
+            player,
+            {
+              kind: "text",
+              prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`
+            },
+            randomAction()
+          );
 
           remoteManager.waitingForOthers(player);
         })

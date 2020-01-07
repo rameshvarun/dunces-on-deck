@@ -30,3 +30,8 @@ export var generateRoomID = () =>
 const PLAYER_ID_LENGTH = 10;
 export var generatePlayerID = () =>
   generateID(ROOM_ID_CHARACTERS, PLAYER_ID_LENGTH);
+
+// Pick a random element out of an array.
+export function choose<T>(choices: Array<T>): T {
+  return choices[Math.floor(Math.random() * choices.length)];
+}

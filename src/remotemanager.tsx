@@ -25,6 +25,7 @@ export type RemoteState =
   | {
       kind: "prompt";
       requestID: number;
+      deadline: number;
       prompt: PromptType;
     }
   | {
@@ -48,6 +49,11 @@ export type RemoteManagerState =
       remoteState: Map<Player, RemoteState>;
       promptResolve: Map<Player, (string) => void>;
     };
+
+// If a player submits an answer right on the deadline, then there answer will
+// be ignored since latency will push it over the deadline. This defines a grace
+// period, so that we still accept the answer a little bit past the deadline.
+const ANSWER_TIMEOUT_GRACE_PERIOD = 1000;
 
 export class RemoteManager {
   roomID: string;
@@ -162,12 +168,22 @@ export class RemoteManager {
   }
 
   // Prompt this player to enter in a string.
-  promptPlayer(player: Player, prompt: PromptType): Promise<string> {
+  promptPlayer(
+    player: Player,
+    prompt: PromptType,
+    defaultValue: string,
+    timeout: number = 60 * 1000
+  ): Promise<string> {
     if (this.state.kind !== "game")
       throw new Error(`Can only call this function in the 'game' state.`);
 
     let requestID = this.requestID++;
-    let promptMsg: RemoteState = { kind: "prompt", prompt, requestID };
+    let promptMsg: RemoteState = {
+      kind: "prompt",
+      prompt,
+      requestID,
+      deadline: Date.now() + timeout
+    };
 
     this.state.remoteState.set(player, promptMsg);
     return new Promise((resolve, reject) => {
@@ -177,6 +193,11 @@ export class RemoteManager {
 
       let conn = this.state.connections.get(player);
       if (conn) conn.send(promptMsg);
+
+      setTimeout(
+        () => resolve(defaultValue),
+        timeout + ANSWER_TIMEOUT_GRACE_PERIOD
+      );
     });
   }
 

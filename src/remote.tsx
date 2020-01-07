@@ -22,6 +22,27 @@ const REMOTE_ID = window.localStorage.remoteID;
 
 console.log(`Remote ID: ${REMOTE_ID}...`);
 
+class Timer extends React.Component<{ deadline: number }, {}> {
+  interval: NodeJS.Timeout;
+
+  constructor(props) {
+    super(props);
+  }
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.forceUpdate();
+    }, 100);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+  render() {
+    let ms = Math.max(0, this.props.deadline - Date.now());
+    let sec = Math.ceil(ms / 1000);
+    return <span>{sec} seconds left...</span>;
+  }
+}
+
 class Remote extends React.Component<{ room: string }, RemoteComponentState> {
   promptInput: React.RefObject<HTMLInputElement>;
   conn?: Peer.DataConnection;
@@ -146,6 +167,9 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
               )}
               {this.selectedGIF && <img src={this.selectedGIF}></img>}
               <button onClick={() => this.submitPrompt()}>Submit</button>
+              <div>
+                <Timer deadline={state.deadline} />
+              </div>
             </div>
           </>
         );
