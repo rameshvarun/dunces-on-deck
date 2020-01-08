@@ -8,7 +8,8 @@ export const CHARACTERS = [
   "Mario",
   "Mark Zuckerberg",
   "Sonic the Hedgehog",
-  "Darth Vader"
+  "Darth Vader",
+  "Pickle Rick"
 ];
 
 export const LOCATIONS = [
@@ -19,13 +20,20 @@ export const LOCATIONS = [
   "The Internet"
 ];
 
-export const THINGS = ["Unicorn Startup", "Studio Apartment in San Francisco"];
+export const THINGS = [
+  "Unicorn Startup",
+  "San Francisco Studio Apartment",
+  "Free Real Estate",
+  "McDonald's Mulan Szechuan Sauce"
+];
 
 export const QUOTES = [
   "I don't like sand. It's coarse and rough and irritating and it gets everywhere.",
   "You mean the chaos emeralds?",
   "Donkeh!",
-  "Fake News!"
+  "Fake News!",
+  "It's free real estate!",
+  "Hello there."
 ];
 
 export const ACTIONS = ["fires off a 3AM tweetstorm"];

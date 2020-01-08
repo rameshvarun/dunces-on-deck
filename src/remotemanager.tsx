@@ -171,7 +171,7 @@ export class RemoteManager {
   promptPlayer(
     player: Player,
     prompt: PromptType,
-    defaultValue: string,
+    defaultValue: string | Promise<string>,
     timeout: number = 60 * 1000
   ): Promise<string> {
     if (this.state.kind !== "game")
@@ -194,10 +194,10 @@ export class RemoteManager {
       let conn = this.state.connections.get(player);
       if (conn) conn.send(promptMsg);
 
-      setTimeout(
-        () => resolve(defaultValue),
-        timeout + ANSWER_TIMEOUT_GRACE_PERIOD
-      );
+      setTimeout(() => resolve(null), timeout + ANSWER_TIMEOUT_GRACE_PERIOD);
+    }).then(res => {
+      if (res && typeof res === "string" && res.trim() !== "") return res;
+      else return defaultValue;
     });
   }
 

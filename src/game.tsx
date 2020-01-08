@@ -1,11 +1,17 @@
 import Peer from "peerjs";
 import * as React from "react";
-import { shuffle } from "./utils";
+import { shuffle, choose } from "./utils";
 
 import { Player, RemoteManager } from "./remotemanager";
 import { narrate } from "./narrator";
 
-import {switchMusic, oceanAmbience, adventurousTheme, battleTheme, victoryTheme} from "./music";
+import {
+  switchMusic,
+  oceanAmbience,
+  adventurousTheme,
+  battleTheme,
+  victoryTheme
+} from "./music";
 
 import {
   randomCharacter,
@@ -16,9 +22,21 @@ import {
   randomDescription
 } from "./defaults";
 
+var giphy = require("giphy-api")("U1SoxcX7Tcwmavn0ySOgbzhrIoDVn8gb");
+
 // Return the first GIF available under this search result.
-function findGIF(search: string): string {
-  return "https://media.giphy.com/media/xWstuL3iiUJ9uBpSDO/giphy.gif";
+async function findGIF(search: string): Promise<string | null> {
+  try {
+    let gifs = (
+      await giphy.search({
+        q: search,
+        limit: 1
+      })
+    ).data;
+    return gifs[0].images.fixed_height.url;
+  } catch {
+    return null;
+  }
 }
 
 export class Game extends React.Component<
@@ -56,7 +74,7 @@ export class Game extends React.Component<
               kind: "text",
               prompt: "The ship you are on is The..."
             },
-            randomCharacter()
+            choose([randomCharacter(), randomThing()])
           )}`;
 
           shipGIF = await remoteManager.promptPlayer(
