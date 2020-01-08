@@ -9,6 +9,9 @@ import { Game } from "./game";
 
 import { RemoteManager, Player } from "./remotemanager";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExpand } from "@fortawesome/free-solid-svg-icons";
+
 type HostState =
   | { kind: "creating-room"; remoteManager: RemoteManager }
   | {
@@ -93,4 +96,35 @@ class Host extends React.Component<{}, HostState> {
   }
 }
 
-ReactDOM.render(<Host />, document.getElementById("root"));
+const Container = () => {
+  return (
+    <>
+      <Host />
+      <div
+        style={{
+          position: "fixed",
+          right: "0px",
+          bottom: "0px",
+          fontSize: "40px",
+          paddingBottom: "10px",
+          paddingRight: "20px"
+        }}
+      >
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            if (window!.document!.fullscreen) {
+              window!.document!.exitFullscreen();
+            } else {
+              window!.document!.documentElement!.requestFullscreen();
+            }
+          }}
+        >
+          <FontAwesomeIcon style={{ margin: "10px" }} icon={faExpand} />
+        </span>
+      </div>
+    </>
+  );
+};
+
+ReactDOM.render(<Container />, document.getElementById("root"));

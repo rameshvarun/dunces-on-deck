@@ -7,6 +7,7 @@ type PromptType =
     }
   | {
       kind: "giphy";
+      search: string;
       prompt: string;
     };
 

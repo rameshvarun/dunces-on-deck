@@ -9,7 +9,8 @@ export const CHARACTERS = [
   "Mark Zuckerberg",
   "Sonic the Hedgehog",
   "Darth Vader",
-  "Pickle Rick"
+  "Pickle Rick",
+  "Pikachu"
 ];
 
 export const LOCATIONS = [

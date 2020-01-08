@@ -81,7 +81,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "giphy",
-              prompt: `Select a GIF to represent ${shipName}.`
+              prompt: `Select a GIF to represent ${shipName}.`,
+              search: shipName
             },
             findGIF(shipName)
           );
@@ -101,7 +102,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "giphy",
-              prompt: `Select a GIF to represent ${captainName}.`
+              prompt: `Select a GIF to represent ${captainName}.`,
+              search: captainName
             },
             findGIF(captainName)
           );
@@ -121,7 +123,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "giphy",
-              prompt: `Select a GIF to represent ${treasureName}.`
+              prompt: `Select a GIF to represent ${treasureName}.`,
+              search: treasureName
             },
             findGIF(treasureName)
           );
@@ -200,7 +203,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "giphy",
-            prompt: `Select a GIF to represent ${name}.`
+            prompt: `Select a GIF to represent ${name}.`,
+            search: name
           },
           findGIF(name)
         );
@@ -270,7 +274,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "giphy",
-            prompt: `Select a GIF to represent ${name}.`
+            prompt: `Select a GIF to represent ${name}.`,
+            search: name
           },
           findGIF(name)
         );
@@ -306,7 +311,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "giphy",
-            prompt: `Select a GIF to represent ${name}.`
+            prompt: `Select a GIF to represent ${name}.`,
+            search: name
           },
           findGIF(name)
         );
@@ -426,12 +432,15 @@ export class Game extends React.Component<
 
   async writeTitle(text: string) {
     narrate(text);
-    this.display.current!.innerHTML += `<h1>${text}</h1>`;
+    this.display.current!.innerHTML += `<h1 class="fadein-slow">${text}</h1>`;
   }
 
   async write(text: string, delay: number = 4, silent = false) {
     if (!silent) narrate(text);
-    this.display.current!.innerHTML += text;
+    const element = document
+      .createRange()
+      .createContextualFragment(`<span class="fadein">${text}</span>`);
+    this.display.current!.appendChild(element);
     await this.wait(delay);
   }
 
@@ -446,7 +455,7 @@ export class Game extends React.Component<
   }
 
   async eol() {
-    this.display.current!.innerHTML += "<br>";
+    this.display.current!.appendChild(document.createElement("br"));
   }
 
   async clear() {
@@ -464,6 +473,6 @@ export class Game extends React.Component<
   }
 
   async showGIF(url: string) {
-    this.gifDisplay.current!.innerHTML = `<img src='${url}'></img>`;
+    this.gifDisplay.current!.innerHTML = `<img class="fadein" src='${url}'></img>`;
   }
 }
