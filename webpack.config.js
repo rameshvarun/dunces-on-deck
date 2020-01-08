@@ -1,6 +1,7 @@
 const path = require("path");
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const common = {
   entry: {
@@ -44,6 +45,9 @@ const common = {
       filename: 'join/index.html',
       chunks: ['remote']
     }),
+    new CopyPlugin([
+      { from: 'src/manifest.json', to: '.' },
+    ]),
   ]
 };
 

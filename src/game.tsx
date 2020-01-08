@@ -29,6 +29,7 @@ async function findGIF(search: string): Promise<string | null> {
   try {
     let gifs = (
       await giphy.search({
+        https: true,
         q: search,
         limit: 1
       })
