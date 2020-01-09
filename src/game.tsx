@@ -53,6 +53,7 @@ export class Game extends React.Component<
   }
 
   async runGame(remoteManager: RemoteManager) {
+    await this.wait(1);
     switchMusic(oceanAmbience);
 
     let players = remoteManager.getPlayers();
@@ -65,6 +66,7 @@ export class Game extends React.Component<
     let treasureGIF: string = "";
     let captainGIF: string = "";
 
+    await this.waitingForInput();
     let pre_title_players = shuffle(players);
     await Promise.all(
       pre_title_players.map(async (player, i) => {
@@ -135,16 +137,12 @@ export class Game extends React.Component<
       })
     );
     remoteManager.lookUp();
+    await this.clear();
 
     switchMusic(adventurousTheme);
     await this.wait(5);
     await this.writeTitle("DUNCES ON DECK");
     await this.wait(5);
-    // await this.writeLine("Presented by Varun Ramesh.");
-    // await this.writeLine("Featuring music by Matthew Pablo.");
-    // await this.write("And written by...");
-    // await this.writeLine(" you!");
-    // await this.clear();
 
     await this.writeLine("Grand adventures await on the high seas!");
 
@@ -177,6 +175,7 @@ export class Game extends React.Component<
     );
     await this.clear();
 
+    await this.waitingForInput();
     type Character = { name: string; introduction: string; gif: string };
 
     let characters = new Map<Player, Character>();
@@ -216,6 +215,7 @@ export class Game extends React.Component<
       })
     );
     remoteManager.lookUp();
+    await this.clear();
 
     for (let { name, introduction, gif } of characters.values()) {
       await this.showGIF(gif);
@@ -250,6 +250,7 @@ export class Game extends React.Component<
       encounter?: Encounter;
     };
 
+    await this.waitingForInput();
     let playerIslandsShuffle = shuffle(players);
     let islands: Array<Island> = await Promise.all(
       playerIslandsShuffle.map(async (player, i) => {
@@ -324,6 +325,7 @@ export class Game extends React.Component<
     );
 
     remoteManager.lookUp();
+    await this.clear();
 
     for (let island of islands) {
       await this.writeLine(`Your crew sees an island in the distance.`);
@@ -353,6 +355,7 @@ export class Game extends React.Component<
 
       let playerEncounterShuffle = shuffle(players);
 
+      await this.waitingForInput();
       type Action = { character: Character; action: string; reaction?: string };
       let actions: Array<Action> = await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
@@ -388,6 +391,7 @@ export class Game extends React.Component<
       );
 
       remoteManager.lookUp();
+      await this.clear();
 
       for (let action of actions) {
         await this.showGIF(action.character.gif);
@@ -433,7 +437,12 @@ export class Game extends React.Component<
 
   async writeTitle(text: string) {
     narrate(text);
-    this.gifDisplay.current!.innerHTML += `<h1 class='fadein' style="font-size: 10vmin;">${text}</h1>`;
+    this.gifDisplay.current!.innerHTML = `<h1 class='fadein-slow' style="font-size: 10vmin;">${text}</h1>`;
+  }
+
+  async waitingForInput() {
+    narrate("Please answer the prompt on your phone.");
+    this.gifDisplay.current!.innerHTML = `<h1 class='fadein' style="font-size: 5vmin;">Waiting for player input...</h1>`;
   }
 
   async write(text: string, delay: number = 4, silent = false) {
@@ -474,6 +483,6 @@ export class Game extends React.Component<
   }
 
   async showGIF(url: string) {
-    this.gifDisplay.current!.innerHTML = `<img class="fadein" style="height: 100%" src='${url}'></img>`;
+    this.gifDisplay.current!.innerHTML = `<img class="fadein-slow" style="height: 100%" src='${url}'></img>`;
   }
 }
