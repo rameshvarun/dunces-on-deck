@@ -10,7 +10,7 @@ import { Game } from "./game";
 import { RemoteManager, Player } from "./remotemanager";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpand } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 // @ts-ignore
 console.log(`Running host entry point, version ${VERSION}.`);
@@ -73,21 +73,20 @@ class Host extends React.Component<{}, HostState> {
         return (
           <>
             <h1
+              className='title'
               style={{
-                fontFamily: "'Great Vibes', cursive",
                 fontSize: "10vmin",
                 marginBottom: 0
               }}
             >
               Dunces on Deck
             </h1>
-            <div>{VERSION}</div>
             <div
               style={{
                 marginTop: "2vmin"
               }}
             >
-              Players join at <a href={joinURL}>{joinURL}</a>
+              Join with your phone at <a href={joinURL}>{joinURL}</a>
             </div>
             <img
               style={{
@@ -110,10 +109,38 @@ class Host extends React.Component<{}, HostState> {
               ({this.state.players.length}) Players Joined
             </div>
             {this.state.players.length >= 1 ? (
-              <button onClick={() => this.startGame()}>Start Game</button>
+              <button
+                style={{
+                  marginTop: "2vmin"
+                }}
+                onClick={() => this.startGame()}
+              >
+                Start Game
+              </button>
             ) : (
               <></>
             )}
+            <div
+              style={{
+                position: "fixed",
+                left: "0px",
+                bottom: "0px",
+                paddingBottom: "10px",
+                paddingLeft: "20px",
+                textAlign: "left",
+                fontSize: "1rem"
+              }}
+            >
+              <div>{VERSION}</div>
+              <div>
+                Created by{" "}
+                <a href="https://www.varunramesh.net">Varun Ramesh</a>
+              </div>
+              <div>
+                Featuring music by{" "}
+                <a href="https://www.matthewpablo.com">Matthew Pablo</a>
+              </div>
+            </div>
           </>
         );
       case "running-game":
@@ -137,6 +164,7 @@ const Container = () => {
       >
         <Host />
       </div>
+
       <div
         style={{
           position: "fixed",

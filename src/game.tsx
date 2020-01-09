@@ -140,11 +140,11 @@ export class Game extends React.Component<
     await this.wait(5);
     await this.writeTitle("DUNCES ON DECK");
     await this.wait(5);
-    await this.writeLine("Presented by Varun Ramesh.");
-    await this.writeLine("Featuring music by Matthew Pablo.");
-    await this.write("And written by...");
-    await this.writeLine(" you!");
-    await this.clear();
+    // await this.writeLine("Presented by Varun Ramesh.");
+    // await this.writeLine("Featuring music by Matthew Pablo.");
+    // await this.write("And written by...");
+    // await this.writeLine(" you!");
+    // await this.clear();
 
     await this.writeLine("Grand adventures await on the high seas!");
 
@@ -433,7 +433,7 @@ export class Game extends React.Component<
 
   async writeTitle(text: string) {
     narrate(text);
-    this.display.current!.innerHTML += `<h1 class="fadein-slow">${text}</h1>`;
+    this.gifDisplay.current!.innerHTML += `<h1 class='fadein' style="font-size: 10vmin;">${text}</h1>`;
   }
 
   async write(text: string, delay: number = 4, silent = false) {
@@ -467,13 +467,13 @@ export class Game extends React.Component<
   render() {
     return (
       <>
-        <div ref={this.gifDisplay}></div>
-        <div ref={this.display}></div>
+        <div ref={this.gifDisplay} style={{ height: "20vmin" }}></div>
+        <div ref={this.display} style={{ marginTop: "5vmin" }}></div>
       </>
     );
   }
 
   async showGIF(url: string) {
-    this.gifDisplay.current!.innerHTML = `<img class="fadein" src='${url}'></img>`;
+    this.gifDisplay.current!.innerHTML = `<img class="fadein" style="height: 100%" src='${url}'></img>`;
   }
 }
