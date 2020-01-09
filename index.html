@@ -3,9 +3,18 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1">
+    <link rel="manifest" href="manifest.json"/>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="description" content="A collaborative storytelling game.">
     <title>Dunces on Deck</title>
 
     <style>
+    html, body {
+      background-color: #ffe0ba;
+    }
+
     .fadein {
       animation: fadein 1s;
     }
@@ -17,6 +26,14 @@
     @keyframes fadein {
         from { opacity: 0; }
         to   { opacity: 1; }
+    }
+
+    .title {
+      font-family: 'Great Vibes', cursive;
+    }
+
+    button {
+      font-size: 3vmin;
     }
     </style>
 
