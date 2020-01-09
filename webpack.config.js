@@ -1,7 +1,9 @@
+const webpack = require('webpack');
 const path = require("path");
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { execSync } = require('child_process');
 
 const common = {
   entry: {
@@ -48,6 +50,9 @@ const common = {
     new CopyPlugin([
       { from: 'src/manifest.json', to: '.' },
     ]),
+    new webpack.DefinePlugin({
+      'VERSION': JSON.stringify(execSync('git describe --always', {encoding: 'utf-8'}).trim()),
+    })
   ]
 };
 

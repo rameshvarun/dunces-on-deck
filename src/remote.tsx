@@ -16,6 +16,9 @@ type RemoteComponentState =
   | { kind: "connecting" }
   | { kind: "connected"; remoteState: RemoteState };
 
+// @ts-ignore
+console.log(`Running remote entry point, version ${VERSION}.`)
+
 if (!window.localStorage.remoteID)
   window.localStorage.remoteID = generatePlayerID();
 const REMOTE_ID = window.localStorage.remoteID;

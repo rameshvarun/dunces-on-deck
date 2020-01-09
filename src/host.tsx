@@ -12,6 +12,9 @@ import { RemoteManager, Player } from "./remotemanager";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpand } from "@fortawesome/free-solid-svg-icons";
 
+// @ts-ignore
+console.log(`Running host entry point, version ${VERSION}.`)
+
 type HostState =
   | { kind: "creating-room"; remoteManager: RemoteManager }
   | {
