@@ -10,7 +10,8 @@ export const CHARACTERS = [
   "Sonic the Hedgehog",
   "Darth Vader",
   "Pickle Rick",
-  "Pikachu"
+  "Pikachu",
+  "General Kenobi"
 ];
 
 export const LOCATIONS = [
@@ -18,7 +19,9 @@ export const LOCATIONS = [
   "America",
   "San Francisco",
   "Reddit",
-  "The Internet"
+  "The Internet",
+  "Twitter",
+  "Facebook"
 ];
 
 export const THINGS = [
@@ -37,7 +40,7 @@ export const QUOTES = [
   "Hello there."
 ];
 
-export const ACTIONS = ["fires off a 3AM tweetstorm"];
+export const ACTIONS = ["fires off a 3AM tweetstorm", "does a backflip"];
 
 export const DESCRIPTIONS = ["is full of cats"];
 

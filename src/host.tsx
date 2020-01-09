@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpand } from "@fortawesome/free-solid-svg-icons";
 
 // @ts-ignore
-console.log(`Running host entry point, version ${VERSION}.`)
+console.log(`Running host entry point, version ${VERSION}.`);
 
 type HostState =
   | { kind: "creating-room"; remoteManager: RemoteManager }
@@ -72,20 +72,43 @@ class Host extends React.Component<{}, HostState> {
           this.state.room;
         return (
           <>
-            <h1 style={{ fontFamily: "'Great Vibes', cursive" }}>
+            <h1
+              style={{
+                fontFamily: "'Great Vibes', cursive",
+                fontSize: "10vmin",
+                marginBottom: 0
+              }}
+            >
               Dunces on Deck
             </h1>
-            <div>
+            <div>{VERSION}</div>
+            <div
+              style={{
+                marginTop: "2vmin"
+              }}
+            >
               Players join at <a href={joinURL}>{joinURL}</a>
             </div>
-            <canvas
-              ref={canvas => {
-                if (canvas) {
-                  QRCode.toCanvas(canvas, joinURL);
+            <img
+              style={{
+                marginTop: "2vmin",
+                width: "30vmin"
+              }}
+              ref={img => {
+                if (img) {
+                  QRCode.toDataURL(joinURL, (err, val) => {
+                    img.src = val;
+                  });
                 }
               }}
-            ></canvas>
-            <div>({this.state.players.length}) Players Joined</div>
+            ></img>
+            <div
+              style={{
+                marginTop: "2vmin"
+              }}
+            >
+              ({this.state.players.length}) Players Joined
+            </div>
             {this.state.players.length >= 1 ? (
               <button onClick={() => this.startGame()}>Start Game</button>
             ) : (
@@ -102,7 +125,18 @@ class Host extends React.Component<{}, HostState> {
 const Container = () => {
   return (
     <>
-      <Host />
+      <div
+        style={{
+          margin: "10vmin",
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "center",
+          alignItems: "center",
+          fontSize: "3vmin"
+        }}
+      >
+        <Host />
+      </div>
       <div
         style={{
           position: "fixed",

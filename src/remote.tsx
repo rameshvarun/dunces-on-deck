@@ -7,9 +7,8 @@ import { generatePlayerID, unexpected } from "./utils";
 
 import { RemoteState } from "./remotemanager";
 
-import { Selector } from "react-giphy-selector";
-
 const GIPHY_API_KEY = "U1SoxcX7Tcwmavn0ySOgbzhrIoDVn8gb";
+const giphy = require("giphy-api")(GIPHY_API_KEY);
 
 type RemoteComponentState =
   | { kind: "error"; error: any }
@@ -17,7 +16,7 @@ type RemoteComponentState =
   | { kind: "connected"; remoteState: RemoteState };
 
 // @ts-ignore
-console.log(`Running remote entry point, version ${VERSION}.`)
+console.log(`Running remote entry point, version ${VERSION}.`);
 
 if (!window.localStorage.remoteID)
   window.localStorage.remoteID = generatePlayerID();
@@ -42,12 +41,120 @@ class Timer extends React.Component<{ deadline: number }, {}> {
   render() {
     let ms = Math.max(0, this.props.deadline - Date.now());
     let sec = Math.ceil(ms / 1000);
-    return <span>{sec} seconds left...</span>;
+    // return <span>{sec} seconds left...</span>;
+    return (
+      <div
+        style={{
+          position: "fixed",
+          right: "5px",
+          bottom: "5px",
+          background: "rgba(0, 0, 0, 0.7)"
+        }}
+      >
+        <span
+          style={{
+            zIndex: 1,
+            padding: "10px",
+            display: "block",
+            fontSize: "20px",
+            color: "white"
+          }}
+        >
+          {sec}s
+        </span>
+      </div>
+    );
   }
 }
 
+class GIPHYSearch extends React.Component<
+  { initialQuery?: string; onSubmit: (val: string) => void },
+  { gifs: Array<string> }
+> {
+  searchInput: React.RefObject<HTMLInputElement> = React.createRef();
+
+  constructor(props) {
+    super(props);
+    this.state = { gifs: [] };
+
+    if (props.initialQuery) this.search(props.initialQuery);
+  }
+  render() {
+    return (
+      <>
+        <input
+          ref={this.searchInput}
+          type="text"
+          defaultValue={this.props.initialQuery}
+        ></input>
+        <button onClick={() => this.search(this.searchInput.current!.value)}>
+          Search
+        </button>
+        <div>
+          {this.state.gifs.map(gif => (
+            <img
+              style={{ padding: "5px", width: "100%", boxSizing: "border-box" }}
+              key={gif}
+              src={gif}
+              onClick={() => {
+                this.props.onSubmit(gif);
+              }}
+            ></img>
+          ))}
+        </div>
+      </>
+    );
+  }
+  async search(query) {
+    let gifs = (
+      await giphy.search({
+        https: true,
+        q: query,
+        limit: 20
+      })
+    ).data;
+
+    this.setState({
+      gifs: gifs.map(g => g.images.fixed_width.url)
+    });
+  }
+}
+
+class TextInput extends React.Component<
+  { onSubmit: (val: string) => void },
+  {}
+> {
+  promptInput: React.RefObject<HTMLInputElement> = React.createRef();
+
+  render() {
+    return (
+      <>
+        <input ref={this.promptInput} type="text"></input>
+        <button
+          onClick={() => {
+            this.props.onSubmit(this.promptInput.current!.value);
+          }}
+        >
+          Submit
+        </button>
+      </>
+    );
+  }
+}
+
+function centered(content) {
+  return (
+    <div
+      style={{
+        textAlign: "center"
+      }}
+    >
+      {content}
+    </div>
+  );
+}
+
 class Remote extends React.Component<{ room: string }, RemoteComponentState> {
-  promptInput: React.RefObject<HTMLInputElement>;
   conn?: Peer.DataConnection;
 
   constructor(props) {
@@ -56,8 +163,6 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
     console.log("This is a remote...");
 
     this.state = { kind: "connecting" };
-
-    this.promptInput = React.createRef();
 
     const peer = new Peer();
 
@@ -88,28 +193,15 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
     });
   }
 
-  submitPrompt() {
+  submitPrompt(value: string) {
     if (this.state.kind !== "connected")
       throw new Error("Remote must be connected.");
     if (this.state.remoteState.kind !== "prompt")
       throw new Error("Remote must be in prompt state.");
 
-    let response: string | null = null;
-    switch (this.state.remoteState.prompt.kind) {
-      case "text":
-        response = this.promptInput.current!.value;
-        break;
-      case "giphy":
-        response = this.selectedGIF;
-        this.selectedGIF = null;
-        break;
-      default:
-        unexpected(this.state.remoteState.prompt);
-    }
-
     this.conn!.send({
       requestID: this.state.remoteState.requestID,
-      response
+      response: value
     });
     this.setState({
       kind: "connected",
@@ -120,11 +212,16 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
   render() {
     switch (this.state.kind) {
       case "connecting":
-        return <h1>Connecting to "{this.props.room}"...</h1>;
+        return centered(<h1>Connecting to "{this.props.room}"...</h1>);
       case "connected":
         return this.connectedRender();
       case "error":
-        return <h1>{this.state.error.toString()}</h1>;
+        return centered(
+          <>
+            <h1>{this.state.error.toString()}</h1>
+            Try refreshing...
+          </>
+        );
       default:
         return unexpected(this.state);
     }
@@ -139,37 +236,39 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
     let state = this.state.remoteState;
     switch (state.kind) {
       case "waiting-for-host":
-        return <h1>Waiting for host...</h1>;
+        return centered(<h1>Waiting for host...</h1>);
       case "waiting-for-others":
-        return <h1>Waiting for other players...</h1>;
+        return centered(<h1>Waiting for other players...</h1>);
       case "look-up":
-        return <h1>Look Up!</h1>;
+        return centered(<h1>Look Up</h1>);
       case "submitting":
-        return <h1>Submitting...</h1>;
+        return centered(<h1>Submitting...</h1>);
       case "prompt":
         let prompt = state.prompt;
         return (
           <>
-            <div
+            <h2
+              key="prompt-div"
               ref={div => {
                 if (div) div.innerHTML = prompt.prompt;
               }}
-            ></div>
+            ></h2>
             <div>
               {prompt.kind == "text" && (
-                <input ref={this.promptInput} type="text"></input>
-              )}
-              {prompt.kind == "giphy" && (
-                <Selector
-                  apiKey={GIPHY_API_KEY}
-                  onGifSelected={gif => {
-                    this.selectedGIF = gif.images.fixed_height.gif_url;
-                    this.forceUpdate();
+                <TextInput
+                  onSubmit={value => {
+                    this.submitPrompt(value);
                   }}
                 />
               )}
-              {this.selectedGIF && <img src={this.selectedGIF}></img>}
-              <button onClick={() => this.submitPrompt()}>Submit</button>
+              {prompt.kind == "giphy" && (
+                <GIPHYSearch
+                  initialQuery={prompt.search}
+                  onSubmit={gif => {
+                    this.submitPrompt(gif);
+                  }}
+                />
+              )}
               <div>
                 <Timer deadline={state.deadline} />
               </div>
