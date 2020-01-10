@@ -12,6 +12,18 @@ import { RemoteManager, Player } from "./remotemanager";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpand, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
+const noSleep = new (require("nosleep.js"))();
+
+document.addEventListener(
+  "click",
+  function enableNoSleep() {
+    document.removeEventListener("click", enableNoSleep, false);
+    console.log("Enabling wake lock...");
+    noSleep.enable();
+  },
+  false
+);
+
 // @ts-ignore
 console.log(`Running host entry point, version ${VERSION}.`);
 
@@ -113,7 +125,9 @@ class Host extends React.Component<{}, HostState> {
                 style={{
                   marginTop: "2vmin"
                 }}
-                onClick={() => this.startGame()}
+                onClick={() => {
+                  this.startGame();
+                }}
               >
                 Start Game
               </button>
