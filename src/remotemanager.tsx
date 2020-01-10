@@ -4,6 +4,7 @@ type PromptType =
   | {
       kind: "text";
       prompt: string;
+      limit: number;
     }
   | {
       kind: "giphy";

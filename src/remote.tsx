@@ -129,7 +129,7 @@ class GIPHYSearch extends React.Component<
 }
 
 class TextInput extends React.Component<
-  { onSubmit: (val: string) => void },
+  { limit: number; onSubmit: (val: string) => void },
   {}
 > {
   promptInput: React.RefObject<HTMLInputElement> = React.createRef();
@@ -137,7 +137,11 @@ class TextInput extends React.Component<
   render() {
     return (
       <>
-        <input ref={this.promptInput} type="text"></input>
+        <input
+          ref={this.promptInput}
+          type="text"
+          maxLength={this.props.limit}
+        ></input>
         <button
           onClick={() => {
             this.props.onSubmit(this.promptInput.current!.value);
@@ -267,6 +271,7 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
                   onSubmit={value => {
                     this.submitPrompt(value);
                   }}
+                  limit={prompt.limit}
                 />
               )}
               {prompt.kind == "giphy" && (

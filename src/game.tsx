@@ -50,6 +50,9 @@ async function findDefaultGIF(search: string): Promise<string> {
 const SHORT_TIMEOUT = 45 * 1000;
 const LONG_TIMEOUT = 60 * 1000;
 
+const NAME_LIMIT = 50;
+const DESCRIPTION_LIMIT = 150;
+
 export class Game extends React.Component<
   { remoteManager: RemoteManager },
   {}
@@ -85,7 +88,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "text",
-              prompt: "The ship you are on is The..."
+              prompt: "The ship you are on is The...",
+              limit: NAME_LIMIT
             },
             choose([randomCharacter(), randomThing()]),
             SHORT_TIMEOUT
@@ -108,7 +112,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "text",
-              prompt: "The ship you are on is lead by Captain..."
+              prompt: "The ship you are on is lead by Captain...",
+              limit: NAME_LIMIT
             },
             randomCharacter(),
             SHORT_TIMEOUT
@@ -131,7 +136,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "text",
-              prompt: "Your party is traveling the oceans looking for The..."
+              prompt: "Your party is traveling the oceans looking for The...",
+              limit: NAME_LIMIT
             },
             randomThing(),
             SHORT_TIMEOUT
@@ -201,7 +207,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: "You are roleplaying as character named..."
+            prompt: "You are roleplaying as character named...",
+            limit: NAME_LIMIT
           },
           randomCharacter(),
           SHORT_TIMEOUT
@@ -211,7 +218,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: `When asked to introduce themselves, ${name} says...`
+            prompt: `When asked to introduce themselves, ${name} says...`,
+            limit: DESCRIPTION_LIMIT
           },
           randomQuote(),
           LONG_TIMEOUT
@@ -277,7 +285,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: "Your crew lands on an island named on your map as..."
+            prompt: "Your crew lands on an island named on your map as...",
+            limit: NAME_LIMIT
           },
           randomLocation(),
           SHORT_TIMEOUT
@@ -287,7 +296,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: `As the crew lands, they see that the island...`
+            prompt: `As the crew lands, they see that the island...`,
+            limit: DESCRIPTION_LIMIT
           },
           randomDescription(),
           LONG_TIMEOUT
@@ -318,7 +328,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
+            prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`,
+            limit: NAME_LIMIT
           },
           randomCharacter(),
           SHORT_TIMEOUT
@@ -328,7 +339,8 @@ export class Game extends React.Component<
           player,
           {
             kind: "text",
-            prompt: `When your crew first comes across ${name}, it...`
+            prompt: `When your crew first comes across ${name}, it...`,
+            limit: DESCRIPTION_LIMIT
           },
           randomAction(),
           LONG_TIMEOUT
@@ -390,7 +402,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "text",
-              prompt: `In order to deal with ${encounter.name}, ${character.name}...`
+              prompt: `In order to deal with ${encounter.name}, ${character.name}...`,
+              limit: DESCRIPTION_LIMIT
             },
             randomAction(),
             LONG_TIMEOUT
@@ -408,7 +421,8 @@ export class Game extends React.Component<
             player,
             {
               kind: "text",
-              prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`
+              prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`,
+              limit: DESCRIPTION_LIMIT
             },
             randomAction(),
             LONG_TIMEOUT
