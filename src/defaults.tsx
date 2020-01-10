@@ -18,7 +18,8 @@ export const CHARACTERS = [
   "Hide the Pain Harold",
   "Barry B. Benson",
   "Internet Troll",
-  "Big Chungus"
+  "Big Chungus",
+  "Forum Moderator"
 ];
 
 export const LOCATIONS = [
@@ -50,7 +51,8 @@ export const QUOTES = [
   "It's free real estate!",
   "Hello there.",
   "Has anyone really been far even as decided to use even go want to do look more like?",
-  "They don't think it be like it is, but it do."
+  "They don't think it be like it is, but it do.",
+  "Test post please ignore."
 ];
 
 export const ACTIONS = [
