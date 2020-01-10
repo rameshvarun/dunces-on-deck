@@ -187,7 +187,7 @@ export class RemoteManager {
     };
 
     this.state.remoteState.set(player, promptMsg);
-    return new Promise((resolve, reject) => {
+    return new Promise<string | null>((resolve, reject) => {
       if (this.state.kind !== "game")
         throw new Error(`Can only prompt remotes in 'game' state.`);
       this.state.promptResolve.set(player, resolve);

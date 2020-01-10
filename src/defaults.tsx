@@ -59,6 +59,12 @@ export const ACTIONS = [
   "asks if ya like jazz"
 ];
 
+export const GIFS = [
+  "https://media1.giphy.com/media/de9SDw6PGRsubN1o3X/200w.gif?cid=0adaf0bdd46aa782e0e7d2f1066c630b7a09e83a218aa8b0&rid=200w.gif",
+  "https://media3.giphy.com/media/1hqYk0leUMddBBkAM7/200w.gif?cid=0adaf0bdd46aa782e0e7d2f1066c630b7a09e83a218aa8b0&rid=200w.gif",
+  "https://media1.giphy.com/media/de9SDw6PGRsubN1o3X/200w.gif?cid=0adaf0bdd46aa782e0e7d2f1066c630b7a09e83a218aa8b0&rid=200w.gif"
+];
+
 export const DESCRIPTIONS = ["is full of cats", "is full of tourists"];
 
 export function randomCharacter() {
@@ -83,4 +89,8 @@ export function randomAction() {
 
 export function randomDescription() {
   return choose(DESCRIPTIONS);
+}
+
+export function randomGIF() {
+  return choose(GIFS);
 }

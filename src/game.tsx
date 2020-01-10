@@ -19,7 +19,8 @@ import {
   randomThing,
   randomQuote,
   randomAction,
-  randomDescription
+  randomDescription,
+  randomGIF
 } from "./defaults";
 
 import { GIPHY_API_KEY } from "./constants";
@@ -29,8 +30,9 @@ const giphy = require("giphy-api")({
   apiKey: GIPHY_API_KEY
 });
 
-// Return the first GIF available under this search result.
-async function findGIF(search: string): Promise<string | null> {
+// Return the first GIF available under this search result, if not just return
+// a fixed GIF.
+async function findDefaultGIF(search: string): Promise<string> {
   try {
     let gifs = (
       await giphy.search({
@@ -41,11 +43,11 @@ async function findGIF(search: string): Promise<string | null> {
     ).data;
     return gifs[0].images.fixed_height.url;
   } catch {
-    return null;
+    return randomGIF();
   }
 }
 
-const SHORT_TIMEOUT = 30 * 1000;
+const SHORT_TIMEOUT = 45 * 1000;
 const LONG_TIMEOUT = 60 * 1000;
 
 export class Game extends React.Component<
@@ -96,7 +98,7 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${shipName}.`,
               search: shipName
             },
-            findGIF(shipName),
+            findDefaultGIF(shipName),
             SHORT_TIMEOUT
           );
         }
@@ -119,7 +121,7 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${captainName}.`,
               search: captainName
             },
-            findGIF(captainName),
+            findDefaultGIF(captainName),
             SHORT_TIMEOUT
           );
         }
@@ -142,7 +144,7 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${treasureName}.`,
               search: treasureName
             },
-            findGIF(treasureName),
+            findDefaultGIF(treasureName),
             SHORT_TIMEOUT
           );
         }
@@ -222,7 +224,7 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name),
+          findDefaultGIF(name),
           SHORT_TIMEOUT
         );
 
@@ -298,7 +300,7 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name),
+          findDefaultGIF(name),
           SHORT_TIMEOUT
         );
 
@@ -339,7 +341,7 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name),
+          findDefaultGIF(name),
           SHORT_TIMEOUT
         );
 
@@ -453,6 +455,8 @@ export class Game extends React.Component<
 
     await this.clear();
     await this.writeTitle("THE END");
+    await this.writeLine(`Thank you for playing!`, 4, true);
+    await this.writeLine(`To play again, refresh the page!`, 4, true);
   }
 
   wait(seconds: number): Promise<void> {
@@ -485,8 +489,8 @@ export class Game extends React.Component<
     await this.write(`<b>${text}<b>`, delay, true);
   }
 
-  async writeLine(text: string, delay: number = 4) {
-    await this.write(text, delay);
+  async writeLine(text: string, delay: number = 4, silent = false) {
+    await this.write(text, delay, silent);
     await this.eol();
   }
 

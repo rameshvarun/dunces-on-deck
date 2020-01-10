@@ -28,7 +28,7 @@ const REMOTE_ID = window.localStorage.remoteID;
 console.log(`Remote ID: ${REMOTE_ID}...`);
 
 class Timer extends React.Component<{ deadline: number }, {}> {
-  interval: NodeJS.Timeout;
+  interval: NodeJS.Timeout | null = null;
 
   constructor(props) {
     super(props);
@@ -39,7 +39,7 @@ class Timer extends React.Component<{ deadline: number }, {}> {
     }, 100);
   }
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.interval!);
   }
   render() {
     let ms = Math.max(0, this.props.deadline - Date.now());
@@ -71,7 +71,7 @@ class Timer extends React.Component<{ deadline: number }, {}> {
 }
 
 class GIPHYSearch extends React.Component<
-  { initialQuery?: string; onSubmit: (val: string) => void },
+  { initialQuery?: string; onSubmit: (val: string | null) => void },
   { gifs: Array<string> }
 > {
   searchInput: React.RefObject<HTMLInputElement> = React.createRef();
@@ -201,7 +201,7 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
     });
   }
 
-  submitPrompt(value: string) {
+  submitPrompt(value: string | null) {
     if (this.state.kind !== "connected")
       throw new Error("Remote must be connected.");
     if (this.state.remoteState.kind !== "prompt")
