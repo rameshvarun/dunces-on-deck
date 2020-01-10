@@ -6,9 +6,12 @@ import * as React from "react";
 import { generatePlayerID, unexpected } from "./utils";
 
 import { RemoteState } from "./remotemanager";
+import { GIPHY_API_KEY } from "./constants";
 
-const GIPHY_API_KEY = "U1SoxcX7Tcwmavn0ySOgbzhrIoDVn8gb";
-const giphy = require("giphy-api")(GIPHY_API_KEY);
+const giphy = require("giphy-api")({
+  https: true,
+  apiKey: GIPHY_API_KEY
+});
 
 type RemoteComponentState =
   | { kind: "error"; error: any }
@@ -82,14 +85,20 @@ class GIPHYSearch extends React.Component<
   render() {
     return (
       <>
-        <input
-          ref={this.searchInput}
-          type="text"
-          defaultValue={this.props.initialQuery}
-        ></input>
-        <button onClick={() => this.search(this.searchInput.current!.value)}>
-          Search
-        </button>
+        <div>
+          <input
+            ref={this.searchInput}
+            type="text"
+            defaultValue={this.props.initialQuery}
+          ></input>
+          <button onClick={() => this.search(this.searchInput.current!.value)}>
+            Search
+          </button>
+          <button onClick={() => this.props.onSubmit(null)}>Skip</button>
+        </div>
+        <div>
+          <img src={"../" + require("./images/powered-by-giphy.png")}></img>
+        </div>
         <div>
           {this.state.gifs.map(gif => (
             <img
@@ -108,7 +117,6 @@ class GIPHYSearch extends React.Component<
   async search(query) {
     let gifs = (
       await giphy.search({
-        https: true,
         q: query,
         limit: 20
       })

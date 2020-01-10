@@ -22,7 +22,12 @@ import {
   randomDescription
 } from "./defaults";
 
-var giphy = require("giphy-api")("U1SoxcX7Tcwmavn0ySOgbzhrIoDVn8gb");
+import { GIPHY_API_KEY } from "./constants";
+
+const giphy = require("giphy-api")({
+  https: true,
+  apiKey: GIPHY_API_KEY
+});
 
 // Return the first GIF available under this search result.
 async function findGIF(search: string): Promise<string | null> {
@@ -39,6 +44,9 @@ async function findGIF(search: string): Promise<string | null> {
     return null;
   }
 }
+
+const SHORT_TIMEOUT = 30 * 1000;
+const LONG_TIMEOUT = 60 * 1000;
 
 export class Game extends React.Component<
   { remoteManager: RemoteManager },
@@ -77,7 +85,8 @@ export class Game extends React.Component<
               kind: "text",
               prompt: "The ship you are on is The..."
             },
-            choose([randomCharacter(), randomThing()])
+            choose([randomCharacter(), randomThing()]),
+            SHORT_TIMEOUT
           )}`;
 
           shipGIF = await remoteManager.promptPlayer(
@@ -87,7 +96,8 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${shipName}.`,
               search: shipName
             },
-            findGIF(shipName)
+            findGIF(shipName),
+            SHORT_TIMEOUT
           );
         }
 
@@ -98,7 +108,8 @@ export class Game extends React.Component<
               kind: "text",
               prompt: "The ship you are on is lead by Captain..."
             },
-            randomCharacter()
+            randomCharacter(),
+            SHORT_TIMEOUT
           )}`;
 
           captainGIF = await remoteManager.promptPlayer(
@@ -108,7 +119,8 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${captainName}.`,
               search: captainName
             },
-            findGIF(captainName)
+            findGIF(captainName),
+            SHORT_TIMEOUT
           );
         }
 
@@ -119,7 +131,8 @@ export class Game extends React.Component<
               kind: "text",
               prompt: "Your party is traveling the oceans looking for The..."
             },
-            randomThing()
+            randomThing(),
+            SHORT_TIMEOUT
           )}`;
 
           treasureGIF = await remoteManager.promptPlayer(
@@ -129,7 +142,8 @@ export class Game extends React.Component<
               prompt: `Select a GIF to represent ${treasureName}.`,
               search: treasureName
             },
-            findGIF(treasureName)
+            findGIF(treasureName),
+            SHORT_TIMEOUT
           );
         }
 
@@ -187,7 +201,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: "You are roleplaying as character named..."
           },
-          randomCharacter()
+          randomCharacter(),
+          SHORT_TIMEOUT
         );
 
         let introduction = await remoteManager.promptPlayer(
@@ -196,7 +211,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: `When asked to introduce themselves, ${name} says...`
           },
-          randomQuote()
+          randomQuote(),
+          LONG_TIMEOUT
         );
 
         let gif = await remoteManager.promptPlayer(
@@ -206,7 +222,8 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name)
+          findGIF(name),
+          SHORT_TIMEOUT
         );
 
         characters.set(player, { name, introduction, gif });
@@ -260,7 +277,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: "Your crew lands on an island named on your map as..."
           },
-          randomLocation()
+          randomLocation(),
+          SHORT_TIMEOUT
         );
 
         let description = await remoteManager.promptPlayer(
@@ -269,7 +287,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: `As the crew lands, they see that the island...`
           },
-          randomDescription()
+          randomDescription(),
+          LONG_TIMEOUT
         );
 
         let gif = await remoteManager.promptPlayer(
@@ -279,7 +298,8 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name)
+          findGIF(name),
+          SHORT_TIMEOUT
         );
 
         remoteManager.waitingForOthers(player);
@@ -287,6 +307,7 @@ export class Game extends React.Component<
       })
     );
 
+    await this.waitingForInput();
     await Promise.all(
       playerIslandsShuffle.map(async (player, i) => {
         let island = islands[(i + 1) % islands.length];
@@ -297,7 +318,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: `Your crew will land on an island named ${island.name}. When they land, they will see that the island ${island.description}. On this island they will encounter...`
           },
-          randomCharacter()
+          randomCharacter(),
+          SHORT_TIMEOUT
         );
 
         let introduction = await remoteManager.promptPlayer(
@@ -306,7 +328,8 @@ export class Game extends React.Component<
             kind: "text",
             prompt: `When your crew first comes across ${name}, it...`
           },
-          randomAction()
+          randomAction(),
+          LONG_TIMEOUT
         );
 
         let gif = await remoteManager.promptPlayer(
@@ -316,7 +339,8 @@ export class Game extends React.Component<
             prompt: `Select a GIF to represent ${name}.`,
             search: name
           },
-          findGIF(name)
+          findGIF(name),
+          SHORT_TIMEOUT
         );
 
         island.encounter = { name, introduction, gif };
@@ -366,7 +390,8 @@ export class Game extends React.Component<
               kind: "text",
               prompt: `In order to deal with ${encounter.name}, ${character.name}...`
             },
-            randomAction()
+            randomAction(),
+            LONG_TIMEOUT
           );
 
           remoteManager.waitingForOthers(player);
@@ -383,7 +408,8 @@ export class Game extends React.Component<
               kind: "text",
               prompt: `In order to deal with ${encounter.name}, ${action.character.name} ${action.action}. In reaction ${encounter.name}...`
             },
-            randomAction()
+            randomAction(),
+            LONG_TIMEOUT
           );
 
           remoteManager.waitingForOthers(player);

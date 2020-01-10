@@ -73,7 +73,7 @@ class Host extends React.Component<{}, HostState> {
         return (
           <>
             <h1
-              className='title'
+              className="title"
               style={{
                 fontSize: "10vmin",
                 marginBottom: 0
@@ -139,6 +139,9 @@ class Host extends React.Component<{}, HostState> {
               <div>
                 Featuring music by{" "}
                 <a href="https://www.matthewpablo.com">Matthew Pablo</a>
+              </div>
+              <div>
+                <img src={require("./images/powered-by-giphy.png")}></img>
               </div>
             </div>
           </>

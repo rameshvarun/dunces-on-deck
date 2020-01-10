@@ -11,7 +11,13 @@ export const CHARACTERS = [
   "Darth Vader",
   "Pickle Rick",
   "Pikachu",
-  "General Kenobi"
+  "General Kenobi",
+  "Epic Sax Guy",
+  "Doggo",
+  "Keyboard Cat",
+  "Hide the Pain Harold",
+  "Barry B. Benson",
+  "an Internet Troll"
 ];
 
 export const LOCATIONS = [
@@ -21,14 +27,19 @@ export const LOCATIONS = [
   "Reddit",
   "The Internet",
   "Twitter",
-  "Facebook"
+  "Facebook",
+  "The Comment's Section",
+  "Netflix"
 ];
 
 export const THINGS = [
   "Unicorn Startup",
   "San Francisco Studio Apartment",
   "Free Real Estate",
-  "McDonald's Mulan Szechuan Sauce"
+  "McDonald's Mulan Szechuan Sauce",
+  "The Funniest GIF",
+  "Repost",
+  "Original Content"
 ];
 
 export const QUOTES = [
@@ -40,9 +51,15 @@ export const QUOTES = [
   "Hello there."
 ];
 
-export const ACTIONS = ["fires off a 3AM tweetstorm", "does a backflip"];
+export const ACTIONS = [
+  "fires off a 3AM tweetstorm",
+  "does a backflip",
+  "asks to see the manager",
+  "writes an angry YouTube comment",
+  "asks if ya like jazz"
+];
 
-export const DESCRIPTIONS = ["is full of cats"];
+export const DESCRIPTIONS = ["is full of cats", "is full of tourists"];
 
 export function randomCharacter() {
   return choose(CHARACTERS);
