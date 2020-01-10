@@ -120,6 +120,13 @@ class Host extends React.Component<{}, HostState> {
             >
               ({this.state.players.length}) Players Joined
             </div>
+            <div
+              style={{
+                marginTop: "2vmin"
+              }}
+            >
+              (3-6 Players Recommended)
+            </div>
             {this.state.players.length >= 1 ? (
               <button
                 style={{
