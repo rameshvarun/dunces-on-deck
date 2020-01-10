@@ -170,12 +170,11 @@ export class Game extends React.Component<
 
     await this.write("Our party sets sail aboard ");
     await this.showGIF(shipGIF);
-    await this.writeBold(shipName);
+    await this.write(shipName);
 
     await this.write(" in hopes of finding ");
     await this.showGIF(treasureGIF);
-    await this.writeBold(treasureName, 0);
-    await this.writeLine("!");
+    await this.writeLine(`${treasureName}!`);
 
     await this.writeLine(
       "Many treasure seekers have tried but none have ever succeeded!"
@@ -190,10 +189,10 @@ export class Game extends React.Component<
     await this.showGIF(captainGIF);
     await this.writeLine(`${captainName}.`);
 
-    await this.writeLine(`${captainName}: All hands on deck!`);
+    await this.writeLine(`"All hands on deck!" yells ${captainName}. `);
     await this.writeLine(`The crew emerge from their quarters.`);
     await this.writeLine(
-      `${captainName}: Some of you seem to be new here so why don't you introduce yourselves.`
+      `"Some of you seem to be new here," says ${captainName}, "Why don't you introduce yourselves?"`
     );
     await this.clear();
 
@@ -246,23 +245,23 @@ export class Game extends React.Component<
 
     for (let { name, introduction, gif } of characters.values()) {
       await this.showGIF(gif);
-      await this.write(`${name}: `);
-      await this.writeLine(introduction);
+      await this.write(`${name} says `);
+      await this.writeLine(`"${introduction}"`);
     }
 
     await this.clear();
 
     await this.showGIF(captainGIF);
-    await this.writeLine(`${captainName}: Okay listen up crew!`);
+    await this.writeLine(`"Okay listen up crew!" says ${captainName}.`);
     await this.showGIF(treasureGIF);
     await this.writeLine(
-      `${captainName}: Whatever the cost, whatever the struggle, I will find ${treasureName}!`
+      `"Whatever the cost, whatever the struggle, I will find ${treasureName}!"`
     );
     await this.writeLine(
-      `${captainName}: I will go to the ends of the earth to find ${treasureName}!`
+      `"I will go to the ends of the earth to find ${treasureName}!"`
     );
     await this.showGIF(captainGIF);
-    await this.writeLine(`${captainName}: Do you understand?`);
+    await this.writeLine(`"Do you understand?" asks ${captainName}.`);
 
     await this.writeLine(
       `${captainName} is interrupted as a voice from the mast calls out "Land Ho!"`
@@ -414,6 +413,7 @@ export class Game extends React.Component<
         })
       );
 
+      await this.waitingForInput();
       await Promise.all(
         playerEncounterShuffle.map(async (player, i) => {
           let action = actions[(i + 1) % actions.length];
@@ -457,7 +457,7 @@ export class Game extends React.Component<
     await this.showGIF(shipGIF);
     await this.writeLine(`Exhausted, your crew is at their breaking point.`);
     await this.writeLine(
-      `${captainName}: It's hopeless! We'll never find ${treasureName}!`
+      `"It's hopeless!" ${captainName} sobs, "We'll never find ${treasureName}!"`
     );
     await this.writeLine(`${captainName}: Wait, what's that!`);
 

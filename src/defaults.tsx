@@ -17,7 +17,7 @@ export const CHARACTERS = [
   "Keyboard Cat",
   "Hide the Pain Harold",
   "Barry B. Benson",
-  "an Internet Troll",
+  "Internet Troll",
   "Big Chungus"
 ];
 
@@ -38,7 +38,7 @@ export const THINGS = [
   "San Francisco Studio Apartment",
   "Free Real Estate",
   "McDonald's Mulan Szechuan Sauce",
-  "A Perfect Looping GIF",
+  "Perfect Looping GIF",
   "Content that isn't a Repost"
 ];
 
