@@ -19,7 +19,8 @@ export const CHARACTERS = [
   "Barry B. Benson",
   "Internet Troll",
   "Big Chungus",
-  "Forum Moderator"
+  "Forum Moderator",
+  "John Cena"
 ];
 
 export const LOCATIONS = [

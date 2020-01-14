@@ -164,7 +164,6 @@ export class Game extends React.Component<
     switchMusic(adventurousTheme);
     await this.wait(5);
     await this.writeTitle("DUNCES ON DECK");
-    await this.wait(5);
 
     await this.writeLine("Grand adventures await on the high seas!");
 
@@ -459,7 +458,7 @@ export class Game extends React.Component<
     await this.writeLine(
       `"It's hopeless!" ${captainName} sobs, "We'll never find ${treasureName}!"`
     );
-    await this.writeLine(`${captainName}: Wait, what's that!`);
+    await this.writeLine(`"Wait, what's that!" asks ${captainName}.`);
 
     switchMusic(victoryTheme);
     await this.showGIF(treasureGIF);
@@ -479,9 +478,10 @@ export class Game extends React.Component<
     });
   }
 
-  async writeTitle(text: string) {
+  async writeTitle(text: string, delay: number = 5) {
     narrate(text);
     this.gifDisplay.current!.innerHTML = `<h1 class='fadein-slow' style="font-size: 10vmin;">${text}</h1>`;
+    await this.wait(delay);
   }
 
   async waitingForInput() {
