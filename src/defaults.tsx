@@ -20,7 +20,8 @@ export const CHARACTERS = [
   "Internet Troll",
   "Big Chungus",
   "Forum Moderator",
-  "John Cena"
+  "John Cena",
+  "SpongeBob"
 ];
 
 export const LOCATIONS = [
@@ -53,7 +54,8 @@ export const QUOTES = [
   "Hello there.",
   "Has anyone really been far even as decided to use even go want to do look more like?",
   "They don't think it be like it is, but it do.",
-  "Test post please ignore."
+  "Test post please ignore.",
+  "Omae wa mou shindeiru."
 ];
 
 export const ACTIONS = [
@@ -62,7 +64,8 @@ export const ACTIONS = [
   "asks to see the manager",
   "writes an angry YouTube comment",
   "asks if ya like jazz",
-  "writes a fanfiction"
+  "writes a fanfiction",
+  "teleports behind you"
 ];
 
 export const GIFS = [
