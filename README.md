@@ -4,7 +4,9 @@
 <img src="./demo.gif">
 </p>
 
-Dunces on Deck is a collaborative storytelling game for 3-6 players, created with Web Speech, PeerJS, and the GIPHY API.
+Dunces on Deck is a collaborative storytelling game for 3-6 players, created with Web Speech, PeerJS, and the GIPHY API. Players connect to a host computer using their phones. Players then fill out prompts which are placed into a template and read out by a text-to-speech narrator.
+
+Trailer - https://www.youtube.com/watch?v=3GE8cPtALoI
 
 ## Assets Used
 
