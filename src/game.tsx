@@ -23,7 +23,7 @@ import {
   randomGIF
 } from "./defaults";
 
-import { GIPHY_API_KEY } from "./constants";
+import { GIPHY_API_KEY } from "../config";
 
 const giphy = require("giphy-api")({
   https: true,

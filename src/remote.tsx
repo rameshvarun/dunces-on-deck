@@ -6,7 +6,9 @@ import * as React from "react";
 import { generatePlayerID, unexpected } from "./utils";
 
 import { RemoteState } from "./remotemanager";
-import { GIPHY_API_KEY } from "./constants";
+import { GIPHY_API_KEY } from "../config";
+
+import { PEERJS_CONFIG } from "../config";
 
 const giphy = require("giphy-api")({
   https: true,
@@ -176,7 +178,7 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
 
     this.state = { kind: "connecting" };
 
-    const peer = new Peer();
+    const peer = new Peer(PEERJS_CONFIG);
 
     peer.on("error", error => {
       console.error(error);

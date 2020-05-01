@@ -57,6 +57,8 @@ export type RemoteManagerState =
 // period, so that we still accept the answer a little bit past the deadline.
 const ANSWER_TIMEOUT_GRACE_PERIOD = 1000;
 
+import { PEERJS_CONFIG } from "../config";
+
 export class RemoteManager {
   roomID: string;
   state: RemoteManagerState;
@@ -68,7 +70,7 @@ export class RemoteManager {
     this.roomID = roomID;
     this.state = { kind: "lobby", connections: new Map() };
 
-    const peer = new Peer(`dunces-on-deck-${roomID}`);
+    const peer = new Peer(`dunces-on-deck-${roomID}`, PEERJS_CONFIG);
 
     peer.on("error", err => console.error(err));
 
