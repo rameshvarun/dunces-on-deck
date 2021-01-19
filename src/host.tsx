@@ -1,5 +1,3 @@
-import Peer from "peerjs";
-
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import * as QRCode from "qrcode";

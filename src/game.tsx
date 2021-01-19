@@ -1,4 +1,3 @@
-import Peer from "peerjs";
 import * as React from "react";
 import { shuffle, choose, sanitizeHTML } from "./utils";
 import {sanitizeUrl as sanitizeURL} from "@braintree/sanitize-url";
@@ -48,7 +47,7 @@ async function findDefaultGIF(search: string): Promise<string> {
   }
 }
 
-const SHORT_TIMEOUT = 20 * 1000;
+const SHORT_TIMEOUT = 30 * 1000;
 const LONG_TIMEOUT = 40 * 1000;
 
 const NAME_LIMIT = 50;

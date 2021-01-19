@@ -1,5 +1,3 @@
-import Peer from "peerjs";
-
 type PromptType =
   | {
       kind: "text";
@@ -42,11 +40,11 @@ export type RemoteResponse = {
 export type RemoteManagerState =
   | {
       kind: "lobby";
-      connections: Map<Player, Peer.DataConnection>;
+      connections: Map<Player, RelayConnection>;
     }
   | {
       kind: "game";
-      connections: Map<Player, Peer.DataConnection | null>;
+      connections: Map<Player, RelayConnection | null>;
 
       remoteState: Map<Player, RemoteState>;
       promptResolve: Map<Player, (string) => void>;
@@ -57,7 +55,8 @@ export type RemoteManagerState =
 // period, so that we still accept the answer a little bit past the deadline.
 const ANSWER_TIMEOUT_GRACE_PERIOD = 1000;
 
-import { PEERJS_CONFIG } from "../config";
+import { RELAY_CONFIG } from "../config";
+import { RelayClient, RelayConnection } from "ws-relay-client/client";
 
 export class RemoteManager {
   roomID: string;
@@ -70,19 +69,19 @@ export class RemoteManager {
     this.roomID = roomID;
     this.state = { kind: "lobby", connections: new Map() };
 
-    const peer = new Peer(`dunces-on-deck-${roomID}`, PEERJS_CONFIG);
+    const relay = new RelayClient(RELAY_CONFIG.url, `dunces-on-deck-${roomID}`);
 
-    peer.on("error", err => console.error(err));
+    relay.on("error", err => console.error(err));
 
-    peer.on("open", id => {
+    relay.on("open", id => {
       console.log(`Peer ID: ${id}...`);
       onCreateRoom();
     });
 
-    peer.on("connection", conn => {
-      let player = conn.metadata;
+    relay.on("connection", conn => {
+      conn.once("message", (data) => {
+        let player = data.remoteID;
 
-      conn.on("open", () => {
         console.log(`Player ${player} has connected...`);
         switch (this.state.kind) {
           case "lobby":
@@ -111,49 +110,49 @@ export class RemoteManager {
             }
             break;
         }
-      });
 
-      conn.on("close", () => {
-        console.log(`Player ${conn.metadata} has disconnected...`);
-        switch (this.state.kind) {
-          case "lobby":
-            // In the lobby phase, if the current connection is the one that
-            // disconnected, delete the connection.
-            if (this.state.connections.get(player) === conn)
-              this.state.connections.delete(player);
-            // Signal to UI that the lobby has been updated.
-            if (this.onLobbyUpdate)
-              this.onLobbyUpdate(Array.from(this.state.connections.keys()));
-            break;
-          case "game":
-            // During the game phase, if the current connection is the one that
-            // disconnected, set the connection to null.
-            if (this.state.connections.get(player) === conn)
-              this.state.connections.set(player, null);
-            break;
-        }
-      });
+        conn.on("close", () => {
+          console.log(`Player ${player} has disconnected...`);
+          switch (this.state.kind) {
+            case "lobby":
+              // In the lobby phase, if the current connection is the one that
+              // disconnected, delete the connection.
+              if (this.state.connections.get(player) === conn)
+                this.state.connections.delete(player);
+              // Signal to UI that the lobby has been updated.
+              if (this.onLobbyUpdate)
+                this.onLobbyUpdate(Array.from(this.state.connections.keys()));
+              break;
+            case "game":
+              // During the game phase, if the current connection is the one that
+              // disconnected, set the connection to null.
+              if (this.state.connections.get(player) === conn)
+                this.state.connections.set(player, null);
+              break;
+          }
+        });
 
-      conn.on("data", (msg: RemoteResponse) => {
-        switch (this.state.kind) {
-          case "game":
-            let currentConnection = this.state.connections.get(player);
-            let remoteState = this.state.remoteState.get(player);
+        conn.on("message", (msg: RemoteResponse) => {
+          switch (this.state.kind) {
+            case "game":
+              let currentConnection = this.state.connections.get(player);
+              let remoteState = this.state.remoteState.get(player);
 
-            // 1. The connection we received data on is current.
-            // 2. The current state of the remote is a prompt.
-            // 3. The requestID of the response matches the requestID of the prompt.
-            if (
-              currentConnection === conn &&
-              remoteState &&
-              remoteState.kind == "prompt" &&
-              remoteState.requestID == msg.requestID
-            ) {
-              let resolve = this.state.promptResolve.get(player)!;
-              resolve(msg.response);
-            }
-            break;
-        }
+              // 1. The connection we received data on is current.
+              // 2. The current state of the remote is a prompt.
+              // 3. The requestID of the response matches the requestID of the prompt.
+              if (
+                currentConnection === conn &&
+                remoteState &&
+                remoteState.kind == "prompt" &&
+                remoteState.requestID == msg.requestID
+              ) {
+                let resolve = this.state.promptResolve.get(player)!;
+                resolve(msg.response);
+              }
+              break;
+          }
+        });
       });
     });
   }

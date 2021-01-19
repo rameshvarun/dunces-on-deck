@@ -14,8 +14,10 @@ const common = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "ts-loader",
-        exclude: /node_modules/
+        use: {
+          loader: "ts-loader",
+          options: { allowTsInNodeModules: true }
+        }
       },
       {
         test: /\.(png|svg|jpg|gif|mp3)$/,
@@ -61,7 +63,9 @@ const development = {
   devtool: "inline-source-map",
   devServer: {
     contentBase: "./dist",
-    https: true
+    https: true,
+    useLocalIp: true,
+    host: "0.0.0.0"
   },
 }
 

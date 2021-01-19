@@ -1,14 +1,14 @@
-import Peer from "peerjs";
-
 import * as ReactDOM from "react-dom";
 import * as React from "react";
+
+import {RelayConnection, RelayClient} from "ws-relay-client/client";
 
 import { generatePlayerID, unexpected } from "./utils";
 
 import { RemoteState } from "./remotemanager";
 import { GIPHY_API_KEY } from "../config";
 
-import { PEERJS_CONFIG } from "../config";
+import { RELAY_CONFIG } from "../config";
 
 const giphy = require("giphy-api")({
   https: true,
@@ -169,7 +169,7 @@ function centered(content) {
 }
 
 class Remote extends React.Component<{ room: string }, RemoteComponentState> {
-  conn?: Peer.DataConnection;
+  conn?: RelayConnection;
 
   constructor(props) {
     super(props);
@@ -178,28 +178,27 @@ class Remote extends React.Component<{ room: string }, RemoteComponentState> {
 
     this.state = { kind: "connecting" };
 
-    const peer = new Peer(PEERJS_CONFIG);
+    const relay = new RelayClient(RELAY_CONFIG.url);
 
-    peer.on("error", error => {
+    relay.on("error", error => {
       console.error(error);
       this.setState(() => ({ kind: "error", error }));
     });
-    peer.on("open", id => {
-      this.conn = peer.connect(`dunces-on-deck-${props.room}`, {
-        serialization: "json",
-        reliable: true,
-        metadata: REMOTE_ID
+
+    relay.on("open", async id => {
+      this.conn = await relay.connect(`dunces-on-deck-${props.room}`);
+      this.conn.send({
+        remoteID: REMOTE_ID,
       });
-      this.conn.on("open", () => {
-        console.log("Host has connected...");
-      });
-      this.conn.on("data", (msg: RemoteState) => {
+
+      this.conn.on("message", (msg: RemoteState) => {
         console.log(msg);
         this.setState({
           kind: "connected",
           remoteState: msg
         });
       });
+
       this.conn.on("error", error => {
         console.error(error);
         this.setState(() => ({ kind: "error", error }));
