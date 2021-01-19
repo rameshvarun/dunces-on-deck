@@ -1,6 +1,7 @@
 import Peer from "peerjs";
 import * as React from "react";
-import { shuffle, choose } from "./utils";
+import { shuffle, choose, sanitizeHTML } from "./utils";
+import {sanitizeUrl as sanitizeURL} from "@braintree/sanitize-url";
 
 import { Player, RemoteManager } from "./remotemanager";
 import { narrate } from "./narrator";
@@ -47,8 +48,8 @@ async function findDefaultGIF(search: string): Promise<string> {
   }
 }
 
-const SHORT_TIMEOUT = 45 * 1000;
-const LONG_TIMEOUT = 60 * 1000;
+const SHORT_TIMEOUT = 20 * 1000;
+const LONG_TIMEOUT = 40 * 1000;
 
 const NAME_LIMIT = 50;
 const DESCRIPTION_LIMIT = 150;

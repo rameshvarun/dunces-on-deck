@@ -1,3 +1,5 @@
+import sanitizeHtml from "sanitize-html";
+
 // Return a shuffled copy of the array that is passed in.
 export function shuffle<T>(unshuffled: Array<T>): Array<T> {
   let array = unshuffled.slice(0);
@@ -34,4 +36,11 @@ export var generatePlayerID = () =>
 // Pick a random element out of an array.
 export function choose<T>(choices: Array<T>): T {
   return choices[Math.floor(Math.random() * choices.length)];
+}
+
+export function sanitizeHTML(text: string): string {
+  return sanitizeHtml(text, {
+    allowedTags: [],
+    allowedAttributes: {}
+  });
 }
