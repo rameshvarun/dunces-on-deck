@@ -16,7 +16,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-giphy-selector": "0.0.1",
-    "sanitize-html": "^2.0.0",
+    "sanitize-html": "^2.3.2",
     "ws-relay-client": "https://github.com/rameshvarun/ws-relay-client.git#37a7371f9226ca35fcdae6d880bb1fff03418301"
   },
   "scripts": {
